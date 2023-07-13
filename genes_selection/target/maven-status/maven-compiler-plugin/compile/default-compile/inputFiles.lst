@@ -1,0 +1,12 @@
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\problem\GAProblem.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\data_processor\Preprocessor.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\general_algorithms\Classifier.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\nsgaii\NSGAIIAlgorithm.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\nsgaii\NSGAII_Genes_Selection.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\problem\ArrayBinarySolutionType.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\experiments\creatingFolds.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\general_algorithms\JaccardDistance.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\data_processor\ModelOrganism.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\experiments\ExpClassifier.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\experiments\ExpNSGAIIGAProblem.java
+C:\Users\pbexp\Documents\GitHub\agmo-model-organisms\genes_selection\src\main\java\josg\genes_selection\general_algorithms\FileHandler.java

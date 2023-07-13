@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2022-04-06T14:10:16.288471500Z</date>
+  <millis>1649254216288</millis>
+  <nanos>471500</nanos>
+  <sequence>2</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>INFO</level>
+  <class>org.uma.jmetal.util.JMetalLogger</class>
+  <method>configureLoggers</method>
+  <thread>1</thread>
+  <message>Loggers configured with null</message>
+</record>
+<record>
+  <date>2022-04-06T14:10:16.301437200Z</date>
+  <millis>1649254216301</millis>
+  <nanos>437200</nanos>
+  <sequence>3</sequence>
+  <logger>org.uma.jmetal.util.JMetalLogger</logger>
+  <level>SEVERE</level>
+  <class>org.uma.jmetal.util.errorchecking.JMetalException</class>
+  <method>&lt;init&gt;</method>
+  <thread>1</thread>
+  <message>Exception when calling method getFileWriter()</message>
+  <exception>
+    <message>java.io.FileNotFoundException: results\FUN-fly\fold-0.csv (O sistema não pode encontrar o caminho especificado)</message>
+    <frame>
+      <class>java.io.FileOutputStream</class>
+      <method>open0</method>
+    </frame>
+    <frame>
+      <class>java.io.FileOutputStream</class>
+      <method>open</method>
+      <line>291</line>
+    </frame>
+    <frame>
+      <class>java.io.FileOutputStream</class>
+      <method>&lt;init&gt;</method>
+      <line>234</line>
+    </frame>
+    <frame>
+      <class>java.io.FileOutputStream</class>
+      <method>&lt;init&gt;</method>
+      <line>123</line>
+    </frame>
+    <frame>
+      <class>org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext</class>
+      <method>getFileWriter</method>
+      <line>36</line>
+    </frame>
+    <frame>
+      <class>org.uma.jmetal.util.fileoutput.SolutionListOutput</class>
+      <method>printObjectivesToFile</method>
+      <line>81</line>
+    </frame>
+    <frame>
+      <class>org.uma.jmetal.util.fileoutput.SolutionListOutput</class>
+      <method>print</method>
+      <line>48</line>
+    </frame>
+    <frame>
+      <class>experiments.ExpNSGAIIGAProblem</class>
+      <method>main</method>
+      <line>141</line>
+    </frame>
+  </exception>
+</record>
+</log>
