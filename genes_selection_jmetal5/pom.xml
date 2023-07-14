@@ -19,37 +19,42 @@
         <dependency>
             <groupId>org.uma.jmetal</groupId>
             <artifactId>jmetal-core</artifactId>
-            <version>5.12-SNAPSHOT</version>
+            <version>6.0</version>
         </dependency>
         <dependency>
             <groupId>org.uma.jmetal</groupId>
             <artifactId>jmetal-algorithm</artifactId>
-            <version>5.12-SNAPSHOT</version>
+            <version>6.0</version>
         </dependency>
         <dependency>
             <groupId>org.uma.jmetal</groupId>
             <artifactId>jmetal-lab</artifactId>
-            <version>5.12-SNAPSHOT</version>
+            <version>6.0</version>
         </dependency>
         <dependency>
             <groupId>org.uma.jmetal</groupId>
-            <artifactId>jmetal-example</artifactId>
-            <version>5.12-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.uma.jmetal</groupId>
-            <artifactId>jmetal-problem</artifactId>
-            <version>5.12-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.uma.jmetal</groupId>
-            <artifactId>jmetal-experimental</artifactId>
-            <version>5.12-SNAPSHOT</version>
+            <artifactId>jmetal-component</artifactId>
+            <version>6.0</version>
         </dependency>
         <dependency>
             <groupId>org.uma.jmetal</groupId>
             <artifactId>jmetal-parallel</artifactId>
-            <version>5.12-SNAPSHOT</version>
+            <version>6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.uma.jmetal</groupId>
+            <artifactId>jmetal-problem</artifactId>
+            <version>6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.uma.jmetal</groupId>
+            <artifactId>jmetal-experimental</artifactId>
+            <version>5.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.uma.jmetal</groupId>
+            <artifactId>jmetal-example</artifactId>
+            <version>5.11</version>
         </dependency>
         <dependency>
             <groupId>com.github.ansell.owlapi</groupId>
