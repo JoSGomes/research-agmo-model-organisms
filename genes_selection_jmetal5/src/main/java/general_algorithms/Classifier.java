@@ -96,12 +96,11 @@ public class Classifier {
      
     /**Calcula a GMean da Specificity e Sensibility e a Reduction Ratio.
      *
-     * @param selectedData Dataset que o modelo será treinado a fim de 
+     * @param tra Dataset que o modelo será treinado a fim de
      * verificar a solução.
      * @param classifier Classificador utilizando como configuração de cálculo
      * de Distância a de Jaccard.
      * @return Retorna a GMean e a Reduction Ratio.
-     * @throws Exception
      */
     private double[] calcGMeanRatioReduction(AbstractClassifier classifier, ArrayList<Instances> tra, ArrayList<Instances> test) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg;
@@ -267,9 +266,9 @@ public class Classifier {
 
     /**Calcula a GMean da Specificity e Sensibility e a Reduction Ratio.
      * 
-     * @param selectedData Dataset que o modelo será treinado a fim de 
+     * @param tra Dataset que o modelo será treinado a fim de
      * verificar a solução.
-     * @param knn Classificador utilizando como configuração de cálculo
+     * @param classifier Classificador utilizando como configuração de cálculo
      * de Distância a de Jaccard.
      * @return Retorna a GMean e a Reduction Ratio.
      * @throws Exception
