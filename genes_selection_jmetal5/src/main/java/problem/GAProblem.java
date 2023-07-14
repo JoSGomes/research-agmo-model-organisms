@@ -27,37 +27,52 @@ import general_algorithms.Classifier;
  */
 public class GAProblem extends AbstractBinaryProblem{  
     private List<Integer> bitsPerVariable ;
-    //private Samples samples_; 
-    
     private final Preprocessor preprocessor;
     int folds;
     int seed;
-    
+    int numberOfVariables;
+    int numberOfObjectives;
+    int numberOfConstraints;
+    String name;
     public GAProblem(Preprocessor preprocessor)
     {
         this.preprocessor = preprocessor;
-        setNumberOfVariables(preprocessor.getNumAttributes());
-        setNumberOfObjectives(2);
-        setNumberOfConstraints(0);
-        setName("Genes Selection");        
+        this.numberOfVariables = preprocessor.getNumAttributes();
+        this.numberOfObjectives = 2;
+        this.numberOfConstraints = 0;
+        this.name = "Genes Selection";
         
-        bitsPerVariable = new ArrayList<>(getNumberOfVariables()) ;
+        bitsPerVariable = new ArrayList<>(this.numberOfVariables) ;
 
-        for (int var = 0; var < getNumberOfVariables(); var++) {
+        for (int var = 0; var < this.numberOfVariables; var++) {
           bitsPerVariable.add(1);
         }
     }
-    
     @Override
-    public List<Integer> getListOfBitsPerVariable() {
-        return this.bitsPerVariable;
+    public int numberOfVariables() {
+        return this.numberOfVariables;
     }
-    
+
+    @Override
+    public int numberOfObjectives() {
+        return this.numberOfObjectives;
+    }
+
+    @Override
+    public int numberOfConstraints() {
+        return this.numberOfConstraints;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
+
     @Override
     public BinarySolution evaluate(BinarySolution solution) {
         /* Solution: suposta intância que pertence a população criada
         aleatoriamente que deve ser classificada. */
-        double[] f = new double[super.getNumberOfObjectives()];    
+        double[] f = new double[this.numberOfObjectives];
         double[] GMeanAndReductionRatio;
         try {
             
@@ -81,6 +96,11 @@ public class GAProblem extends AbstractBinaryProblem{
         
         double[] results = classifier.classifySolution(s1, tra, test);
         return results;
+    }
+
+    @Override
+    public List<Integer> listOfBitsPerVariable() {
+        return null;
     }
 }
 
