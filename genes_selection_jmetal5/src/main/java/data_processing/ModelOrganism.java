@@ -15,7 +15,7 @@ public enum ModelOrganism {
     Worm("worm"),
     Yeast("yeast");
 	
-    public String originalDataset;
+    public final String originalDataset;
     
     private ModelOrganism(String originalDataset){
         this.originalDataset = originalDataset;

@@ -16,8 +16,7 @@ import general_algorithms.FileHandler;
  *
  * @author pbexp
  */
-public class Preprocessor{
-    
+public class Preprocessor {
     private final int numAtributes;
     private final int fold;
     private final ModelOrganism organism;   
@@ -38,7 +37,7 @@ public class Preprocessor{
         this.numAtributes = FileHandler.readDatasetTESTFoldAGMO(organism, fold, runningDataSet).get(0).numAttributes() - 1;
         this.organism = organism;
         this.runningDataset = runningDataSet;
-        classifier = null;
+        this.classifier = null;
         this.runningClassifier = runningClassifier;
         
     }
@@ -52,13 +51,11 @@ public class Preprocessor{
     }
     
     public ArrayList<Instances> getFoldTRAGridSearch() throws Exception{
-        ArrayList<Instances> traSet = FileHandler.readFoldGridSearch(organism, fold, true);
-        return traSet;  
+        return FileHandler.readFoldGridSearch(organism, fold, true);
     }
     
     public ArrayList<Instances> getFoldTESTGridSearch() throws Exception{
-        ArrayList<Instances> testSet = FileHandler.readFoldGridSearch(organism, fold, false);
-        return testSet;  
+        return FileHandler.readFoldGridSearch(organism, fold, false);
     }
     
     /** Retorna o fold de treino genuínos.
