@@ -105,8 +105,8 @@ public class FileHandler {
     {
         ArrayList<Instances> foldData = new ArrayList<>();
 
-        String file = PathOfDataset.root + runningDataset + organism.originalDataset
-                + PathOfDataset.rootTRAandTESTAGMO + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath + FileExtension.arff;
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset
+                + PathOfDataset.rootTRAandTESTAGMO.path + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
@@ -129,22 +129,19 @@ public class FileHandler {
      * @return ArrayList com apenas um elemento.
      * @throws Exception
      */
-    public static ArrayList<Instances> readDatasetTRAFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
+    public static Instances readDatasetTRAFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
         
-        ArrayList<Instances> foldsData = new ArrayList<>();
+        Instances data;
 
-        String file = PathOfDataset.root + runningDataset + organism.originalDataset + PathOfDataset.traAndTest
-                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath + FileExtension.arff;
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
+        data = new Instances(new BufferedReader(new FileReader(file)));
         if(data.classIndex() == -1 ){
             data.setClassIndex(data.numAttributes() -1);           
         }
-        foldsData.add(data);
         
-        
-        return foldsData;
+        return data;
     }
     
     /**
@@ -161,8 +158,8 @@ public class FileHandler {
         
         ArrayList<Instances> foldsData = new ArrayList<>();
 
-        String file = PathOfDataset.root + runningDataset + organism.originalDataset + PathOfDataset.traAndTest
-                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath + FileExtension.arff;
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
 
         DataSource source = new DataSource(file);
@@ -188,8 +185,8 @@ public class FileHandler {
         
         ArrayList<Instances> foldsData = new ArrayList<>();
 
-        String file = PathOfDataset.root + runningDataset + organism.originalDataset + PathOfDataset.traAndTest
-                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath + FileExtension.arff;
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
@@ -212,8 +209,8 @@ public class FileHandler {
     public static ArrayList<Instances> readDatasetTESTFolds(ModelOrganism organism, int fold, String runningDataset) throws Exception{
         ArrayList<Instances> foldsData = new ArrayList<>();
 
-        String file = PathOfDataset.root + runningDataset + organism.originalDataset + PathOfDataset.traAndTest
-                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath + FileExtension.arff;
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
 
         DataSource source = new DataSource(file);
@@ -240,14 +237,14 @@ public class FileHandler {
         String file = "";
         for(int n =0; n < folds; n++){
             if(tra) {
-                file = PathOfDataset.root + organism.originalDataset
-                          + PathOfDataset.rootTRAandTESTAGMO
-                          + organism.originalDataset+ "TRA-" + n + PathOfDataset.foldPath + FileExtension.arff;
+                file = PathOfDataset.root.path + organism.originalDataset
+                          + PathOfDataset.rootTRAandTESTAGMO.path
+                          + organism.originalDataset+ "TRA-" + n + PathOfDataset.foldPath.path + FileExtension.arff.extension;
             }
             else {
-                file = PathOfDataset.root + organism.originalDataset
-                          + PathOfDataset.rootTRAandTESTAGMO
-                          + organism.originalDataset+ "TEST-" + n + PathOfDataset.foldPath + FileExtension.arff;
+                file = PathOfDataset.root.path + organism.originalDataset
+                          + PathOfDataset.rootTRAandTESTAGMO.path
+                          + organism.originalDataset+ "TEST-" + n + PathOfDataset.foldPath.path + FileExtension.arff.extension;
             }
             DataSource source = new DataSource(file);
             Instances fold = source.getDataSet();

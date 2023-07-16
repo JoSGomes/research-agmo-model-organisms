@@ -63,7 +63,7 @@ public class Preprocessor {
      * @return ArrayList com apenas um elemento.
      * @throws Exception
      */
-    public ArrayList<Instances> getDatasetsTRAFold() throws Exception{
+    public Instances getDatasetsTRAFold() throws Exception{
         return FileHandler.readDatasetTRAFold(organism, fold, this.runningDataset);
         
     }
