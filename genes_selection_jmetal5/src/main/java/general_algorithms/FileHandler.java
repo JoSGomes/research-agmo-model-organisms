@@ -22,9 +22,7 @@ import java.util.logging.Logger;
 
 import data_processing.ModelOrganism;
 
-import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
-import org.uma.jmetal.solution.binarysolution.BinarySolution;
-
+import smile.glm.model.Model;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -42,38 +40,34 @@ public class FileHandler {
     /**
      *
      */
-    public enum FileExtension{
+    private enum FileExtension {
+        txt(".txt"),
+        arff(".arff");
 
-        /**
-         *
-         */
-        txt,      
+        public final String extension;
 
-        /**
-         *
-         */
-        arff      
-    }
-    
-    /**
-     *
-     * @param organism
-     * @return
-     * @throws Exception
-     */
-    public static Instances readDataSet(ModelOrganism organism) throws Exception{
-        
-        String file = "D:\\Gabriel\\Recursos para estudo - IC\\IC\\ic_project\\datasets\\" + organism.name() +  "." + FileExtension.arff.name();
-        DataSource source = new DataSource(file);
-        
-        
-        Instances data = source.getDataSet();
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);           
+        FileExtension(String extension){
+            this.extension = extension;
+
         }
-        return data;
     }
-    
+
+    private enum PathOfDataset {
+        root("resources\\datasets\\"),
+        traAndTest("-dataset-folds\\"),
+
+        rootTRAandTESTAGMO("-dataset-folds\\test-train-agmo\\"),
+
+        foldPath("-fold");
+
+        public final String path;
+
+        PathOfDataset(String path){
+            this.path = path;
+
+        }
+    }
+
     /**
      *
      * @param organism
@@ -85,11 +79,9 @@ public class FileHandler {
     public static ArrayList<Instances> readDatasetTRAFoldAGMO(ModelOrganism organism, int fold, String runningDataset) throws Exception
     {
         ArrayList<Instances> foldData = new ArrayList<>();
-        
-        String file = "";
 
-        file = "resources\\datasets\\"+ runningDataset + organism.originalDataset 
-              + "-dataset-folds\\test-train-agmo\\" + organism.originalDataset+ "TRA-" + fold +"-fold.arff";
+        String file = PathOfDataset.root + runningDataset + organism.originalDataset
+                + PathOfDataset.rootTRAandTESTAGMO + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath + FileExtension.arff;
 
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
@@ -113,11 +105,9 @@ public class FileHandler {
     public static ArrayList<Instances> readDatasetTESTFoldAGMO(ModelOrganism organism, int fold, String runningDataset) throws Exception
     {
         ArrayList<Instances> foldData = new ArrayList<>();
-        
-        String file = "";
-        
-        file = "resources\\datasets\\"+ runningDataset + organism.originalDataset 
-              + "-dataset-folds\\test-train-agmo\\" + organism.originalDataset+ "TEST-" + fold +"-fold.arff";
+
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset
+                + PathOfDataset.rootTRAandTESTAGMO.path + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
@@ -140,24 +130,19 @@ public class FileHandler {
      * @return ArrayList com apenas um elemento.
      * @throws Exception
      */
-    public static ArrayList<Instances> readDatasetTRAFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
+    public static Instances readDatasetTRAFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
         
-        ArrayList<Instances> foldsData = new ArrayList<>();
-        
-        String file = "";
+        Instances data;
 
-        file = "resources\\datasets\\"+ runningDataset +organism.originalDataset + "-dataset-folds\\" 
-                                + organism.originalDataset+ "TRA-" + fold +"-fold.arff";
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
+        data = new Instances(new BufferedReader(new FileReader(file)));
         if(data.classIndex() == -1 ){
             data.setClassIndex(data.numAttributes() -1);           
         }
-        foldsData.add(data);
         
-        
-        return foldsData;
+        return data;
     }
     
     /**
@@ -173,11 +158,9 @@ public class FileHandler {
     public static ArrayList<Instances> readDatasetTESTFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
         
         ArrayList<Instances> foldsData = new ArrayList<>();
-        
-        String file = "";
 
-        file = "resources\\datasets\\" + runningDataset + organism.originalDataset + "-dataset-folds\\" 
-                                + organism.originalDataset+ "TEST-" + fold +"-fold.arff";
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
 
         DataSource source = new DataSource(file);
@@ -202,11 +185,9 @@ public class FileHandler {
     public static ArrayList<Instances> readDatasetTRAFolds(ModelOrganism organism, int fold, String runningDataset) throws Exception{
         
         ArrayList<Instances> foldsData = new ArrayList<>();
-        
-        String file = "";
 
-        file = "resources\\datasets\\"+ runningDataset + organism.originalDataset + "-dataset-folds\\" 
-                                + organism.originalDataset+ "TRA-" + fold +"-fold.arff";
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
@@ -227,13 +208,10 @@ public class FileHandler {
      * @throws Exception
      */
     public static ArrayList<Instances> readDatasetTESTFolds(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-        
         ArrayList<Instances> foldsData = new ArrayList<>();
-        
-        String file = "";
 
-        file = "resources\\datasets\\" + runningDataset + organism.originalDataset + "-dataset-folds\\" 
-                                + organism.originalDataset+ "TEST-" + fold +"-fold.arff";
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
+                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
 
         DataSource source = new DataSource(file);
@@ -254,22 +232,20 @@ public class FileHandler {
      * @return
      * @throws Exception
      */
-    public static ArrayList<Instances> readFoldGridSearch(ModelOrganism organism, int folds, boolean tra) throws Exception
-    {
+    public static ArrayList<Instances> readFoldGridSearch(ModelOrganism organism, int folds, boolean tra) throws Exception {
         ArrayList<Instances> foldData = new ArrayList<>();
+
         String file = "";
-        
         for(int n =0; n < folds; n++){
-            if(tra)
-            {
-                file = "resources\\datasets\\" + organism.originalDataset 
-                          + "-dataset-folds\\test-train-agmo\\" 
-                          + organism.originalDataset+ "TRA-" + n + "-fold.arff";  
+            if(tra) {
+                file = PathOfDataset.root.path + organism.originalDataset
+                          + PathOfDataset.rootTRAandTESTAGMO.path
+                          + organism.originalDataset+ "TRA-" + n + PathOfDataset.foldPath.path + FileExtension.arff.extension;
             }
-            else{
-                file = "resources\\datasets\\" + organism.originalDataset 
-                          + "-dataset-folds\\test-train-agmo\\" 
-                          + organism.originalDataset+ "TEST-" + n + "-fold.arff"; 
+            else {
+                file = PathOfDataset.root.path + organism.originalDataset
+                          + PathOfDataset.rootTRAandTESTAGMO.path
+                          + organism.originalDataset+ "TEST-" + n + PathOfDataset.foldPath.path + FileExtension.arff.extension;
             }
             DataSource source = new DataSource(file);
             Instances fold = source.getDataSet();
@@ -278,8 +254,7 @@ public class FileHandler {
             }
             foldData.add(fold);
         }
-        
-        
+
         return foldData;
     }
    
@@ -304,8 +279,8 @@ public class FileHandler {
         String crossover = Double.toString(crossoverA);
         String populationSize = Integer.toString(populationSizeA);
         
-        double GMean = (double) results[0];
-        double ratioReduction = (double) results[1];
+        double GMean = results[0];
+        double ratioReduction = results[1];
         GMean = GMean * (-1);
         ratioReduction = ratioReduction * (-1);
         
@@ -316,7 +291,7 @@ public class FileHandler {
     
     /**
      *
-     * @param output
+     * @param output Nome da saída
      */
     public static void writeResults(String output){    
         try{ 
@@ -335,10 +310,9 @@ public class FileHandler {
             resultsCSV.add(headers);
         }
 
-        
-        double GMean = (double) results[0];
-        
+        double GMean = results[0];
         String[] aux = {organism, "", "", "", Integer.toString(fold), Double.toString(GMean), "", ""};
+
         resultsCSV.add(aux);
         writeResults(output);
     }
@@ -346,40 +320,29 @@ public class FileHandler {
     
     /**
      *
-     * @param organism
-     * @param fileName
-     * @return
+     * @param organism Organismo no qual será realizada a leitura dos ancestrais de cada GO Termo.
+     * @return HashMap com chave o nome do GO Termo e valor uma lista de GO Termos.
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static HashMap<String, List<String>> readAncestors(ModelOrganism organism, String fileName) throws FileNotFoundException, IOException{
-        HashMap<String, List<String>> organismGOTerms = new HashMap<>();
-        
-        String[] splitedFileName = null;
-        splitedFileName[0] = "";
-        splitedFileName[1] = "";
-        if(!("".equals(fileName))){
-            splitedFileName = null;
-            splitedFileName = fileName.split("-");
-        }
-        String file = "D:\\Gabriel\\Recursos para estudo - IC\\IC\\ic_project\\datasets\\" + splitedFileName[0] + "-" + splitedFileName[1] + "\\" +
-                      "gene_ancestors_" + organism.name() + "-" + splitedFileName[1] + FileExtension.txt;
-        
+    public static HashMap<String, List<String>> readAncestors(ModelOrganism organism) throws FileNotFoundException, IOException{
+        HashMap<String, List<String>> organismAncestorsGOTerms = new HashMap<>();
+
+        String file = PathOfDataset.root.path + "gene_ancestors_" + organism.originalDataset + FileExtension.txt.extension;
         BufferedReader readingFile = new BufferedReader(new FileReader(file));
-        String line = null;
-        
-        while((line = readingFile.readLine())!= null){
-            List<String> ancestors = new ArrayList<>();
-            String[] terms = null;
-            String mainTerm = null;
+
+        String line;
+        while((line = readingFile.readLine()) != null){
+            String[] terms;
+            String mainTerm;
             terms = line.split(" ");
             mainTerm = terms[0];
-            
-            ancestors.addAll(Arrays.asList(terms).subList(1, terms.length));
-            organismGOTerms.put(mainTerm, ancestors);
+
+            List<String> ancestors = new ArrayList<>(Arrays.asList(terms).subList(1, terms.length));
+            organismAncestorsGOTerms.put(mainTerm, ancestors);
         } 
         
-        return organismGOTerms;
+        return organismAncestorsGOTerms;
     }
 
 }

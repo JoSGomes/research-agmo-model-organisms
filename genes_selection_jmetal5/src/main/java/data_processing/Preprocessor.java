@@ -6,6 +6,8 @@
 package data_processing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import weka.core.Instances;
 
@@ -16,8 +18,7 @@ import general_algorithms.FileHandler;
  *
  * @author pbexp
  */
-public class Preprocessor{
-    
+public class Preprocessor {
     private final int numAtributes;
     private final int fold;
     private final ModelOrganism organism;   
@@ -38,7 +39,7 @@ public class Preprocessor{
         this.numAtributes = FileHandler.readDatasetTESTFoldAGMO(organism, fold, runningDataSet).get(0).numAttributes() - 1;
         this.organism = organism;
         this.runningDataset = runningDataSet;
-        classifier = null;
+        this.classifier = null;
         this.runningClassifier = runningClassifier;
         
     }
@@ -52,13 +53,11 @@ public class Preprocessor{
     }
     
     public ArrayList<Instances> getFoldTRAGridSearch() throws Exception{
-        ArrayList<Instances> traSet = FileHandler.readFoldGridSearch(organism, fold, true);
-        return traSet;  
+        return FileHandler.readFoldGridSearch(organism, fold, true);
     }
     
     public ArrayList<Instances> getFoldTESTGridSearch() throws Exception{
-        ArrayList<Instances> testSet = FileHandler.readFoldGridSearch(organism, fold, false);
-        return testSet;  
+        return FileHandler.readFoldGridSearch(organism, fold, false);
     }
     
     /** Retorna o fold de treino genuínos.
@@ -66,7 +65,7 @@ public class Preprocessor{
      * @return ArrayList com apenas um elemento.
      * @throws Exception
      */
-    public ArrayList<Instances> getDatasetsTRAFold() throws Exception{
+    public Instances getDatasetsTRAFold() throws Exception{
         return FileHandler.readDatasetTRAFold(organism, fold, this.runningDataset);
         
     }
@@ -88,7 +87,6 @@ public class Preprocessor{
      */
     public ArrayList<Instances> getDatasetsTRAFolds() throws Exception{
         return FileHandler.readDatasetTRAFolds(organism, fold, this.runningDataset);
-        
     }
     
     /** Retorna todos os folds de teste genuínos.
@@ -99,6 +97,10 @@ public class Preprocessor{
     public ArrayList<Instances> getDatasetsTESTFolds() throws Exception{
          return FileHandler.readDatasetTESTFolds(organism, fold, this.runningDataset);
         
+    }
+
+    public HashMap<String, List<String>> getOrganismAncestors() throws Exception {
+        return FileHandler.readAncestors(organism);
     }
     
     /**Retorna o organismo atual que está em curso

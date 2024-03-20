@@ -6,6 +6,7 @@
 package experiments;
 
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -37,6 +38,7 @@ public class ExpNSGAIIGAProblem {
         
         int populationSize = 100;
         int maxEvaluation = 20000;
+
         //Execução paralela
         int numberOfFolds = 10;
         int numberOfThreads;  
@@ -48,10 +50,8 @@ public class ExpNSGAIIGAProblem {
         String[] classifier = {"KNN", "NB", "J48"};
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
         System.out.println("Using " + numberOfThreads + " threads for parallel execution.");
-        
-        int maxEvaluationsSelectInstances = maxEvaluation;
-        int populationSizeSelectInstances = populationSize;
-        for(String runningDataSet : dataSet){    
+
+        for(String runningDataSet : dataSet){
             for(String runningClassifier : classifier){
                 for(ModelOrganism organism : ModelOrganism.values()){
                     double probabilityCrossoverSelectInstances = 0;
@@ -64,32 +64,25 @@ public class ExpNSGAIIGAProblem {
                             //Parâmetros do NSGAII                         
                             switch (organism.originalDataset) 
                             {
-                                case "fly" -> {
+                                case "fly", "yeast" -> {
                                     probabilityMutationSelectInstances = 0.2;
                                     probabilityCrossoverSelectInstances = 0.5;
                                 }
-                                case "mouse" -> {
+                                case "mouse", "worm" -> {
                                     probabilityMutationSelectInstances = 0.2;
                                     probabilityCrossoverSelectInstances = 0.9;
-                                }
-                                case "worm" -> {
-                                    probabilityMutationSelectInstances = 0.2;
-                                    probabilityCrossoverSelectInstances = 0.9;
-                                }
-                                case "yeast" -> {
-                                    probabilityMutationSelectInstances = 0.2;
-                                    probabilityCrossoverSelectInstances = 0.5;
                                 }
                             }
                             try 
                             {
                                 preprocessor = new Preprocessor(organism, n, runningDataSet, runningClassifier);
+                                HashMap<String, List<String>> ancestors = preprocessor.getOrganismAncestors();
 
                                 System.out.println(organism.originalDataset + " fold-" + n + " " + runningDataSet);
                                 Callable<Object> experiment = new NSGAIIAlgorithm(
-                                    preprocessor, 
-                                    populationSizeSelectInstances,
-                                    maxEvaluationsSelectInstances,
+                                    preprocessor,
+                                    populationSize,
+                                    maxEvaluation,
                                     probabilityCrossoverSelectInstances,
                                     probabilityMutationSelectInstances,    
                                     indexThread                        
@@ -103,10 +96,11 @@ public class ExpNSGAIIGAProblem {
                                 Logger.getLogger(NSGAIIAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
                             }                      
                         }
+
                         //laço dedicado a espera da execução da thread.           
                         for (int key : results.keySet()){
-                        Future<Object> future = results.get(key);
-                        Object aux = future.get();                
+                            Future<Object> future = results.get(key);
+                            Object aux = future.get();
                         }
                         
                         //Testar para a melhor solução gerada    
@@ -117,8 +111,9 @@ public class ExpNSGAIIGAProblem {
                         for(int i = 1; i < (results.size() + 1); i++){
                             solAndPopulation = (ArrayList) results.get(i).get();
                             auxSolution =  (BinarySolution) solAndPopulation.get(0);
-                            auxGMean = (double) auxSolution.objectives()[0]*(-1);
-                            auxRatioR = (double) auxSolution.objectives()[1]*(-1);
+                            auxGMean = auxSolution.objectives()[0] *(-1);
+                            auxRatioR = auxSolution.objectives()[1]*(-1);
+
                             if(auxGMean > bestGMean || (auxGMean == bestGMean && auxRatioR > bestRatioR)){
                                 bestSolutionCounter = i;
                                 bestGMean = auxGMean;
@@ -170,7 +165,6 @@ public class ExpNSGAIIGAProblem {
     } //end calculateNumThreads method
 
     private static int calculateNumThreads() {
-        int cores = Runtime.getRuntime().availableProcessors();
-        return cores;
+        return Runtime.getRuntime().availableProcessors();
     }
 }
