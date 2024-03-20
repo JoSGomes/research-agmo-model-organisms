@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import data_processing.ModelOrganism;
 
+import smile.glm.model.Model;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -45,7 +46,7 @@ public class FileHandler {
 
         public final String extension;
 
-        private FileExtension(String extension){
+        FileExtension(String extension){
             this.extension = extension;
 
         }
@@ -61,7 +62,7 @@ public class FileHandler {
 
         public final String path;
 
-        private PathOfDataset(String path){
+        PathOfDataset(String path){
             this.path = path;
 
         }
@@ -278,8 +279,8 @@ public class FileHandler {
         String crossover = Double.toString(crossoverA);
         String populationSize = Integer.toString(populationSizeA);
         
-        double GMean = (double) results[0];
-        double ratioReduction = (double) results[1];
+        double GMean = results[0];
+        double ratioReduction = results[1];
         GMean = GMean * (-1);
         ratioReduction = ratioReduction * (-1);
         
@@ -290,7 +291,7 @@ public class FileHandler {
     
     /**
      *
-     * @param output
+     * @param output Nome da saída
      */
     public static void writeResults(String output){    
         try{ 
@@ -309,7 +310,7 @@ public class FileHandler {
             resultsCSV.add(headers);
         }
 
-        double GMean = (double) results[0];
+        double GMean = results[0];
         String[] aux = {organism, "", "", "", Integer.toString(fold), Double.toString(GMean), "", ""};
 
         resultsCSV.add(aux);
@@ -319,40 +320,29 @@ public class FileHandler {
     
     /**
      *
-     * @param organism
-     * @param fileName
-     * @return
+     * @param organism Organismo no qual será realizada a leitura dos ancestrais de cada GO Termo.
+     * @return HashMap com chave o nome do GO Termo e valor uma lista de GO Termos.
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static HashMap<String, List<String>> readAncestors(ModelOrganism organism, String fileName) throws FileNotFoundException, IOException{
-        HashMap<String, List<String>> organismGOTerms = new HashMap<>();
-        
-        String[] splitedFileName = null;
-        splitedFileName[0] = "";
-        splitedFileName[1] = "";
-        if(!("".equals(fileName))){
-            splitedFileName = null;
-            splitedFileName = fileName.split("-");
-        }
-        String file = "D:\\Gabriel\\Recursos para estudo - IC\\IC\\ic_project\\datasets\\" + splitedFileName[0] + "-" + splitedFileName[1] + "\\" +
-                      "gene_ancestors_" + organism.name() + "-" + splitedFileName[1] + FileExtension.txt;
-        
+    public static HashMap<String, List<String>> readAncestors(ModelOrganism organism) throws FileNotFoundException, IOException{
+        HashMap<String, List<String>> organismAncestorsGOTerms = new HashMap<>();
+
+        String file = PathOfDataset.root.path + "gene_ancestors_" + organism.originalDataset + FileExtension.txt.extension;
         BufferedReader readingFile = new BufferedReader(new FileReader(file));
-        String line = null;
-        
-        while((line = readingFile.readLine())!= null){
-            List<String> ancestors = new ArrayList<>();
-            String[] terms = null;
-            String mainTerm = null;
+
+        String line;
+        while((line = readingFile.readLine()) != null){
+            String[] terms;
+            String mainTerm;
             terms = line.split(" ");
             mainTerm = terms[0];
-            
-            ancestors.addAll(Arrays.asList(terms).subList(1, terms.length));
-            organismGOTerms.put(mainTerm, ancestors);
+
+            List<String> ancestors = new ArrayList<>(Arrays.asList(terms).subList(1, terms.length));
+            organismAncestorsGOTerms.put(mainTerm, ancestors);
         } 
         
-        return organismGOTerms;
+        return organismAncestorsGOTerms;
     }
 
 }

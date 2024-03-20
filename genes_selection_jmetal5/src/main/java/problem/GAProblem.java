@@ -22,7 +22,7 @@ import general_algorithms.Classifier;
 
 
 /**
- *Objetivos: increse the GMean and reduction rate. 
+ *Objetivos: increase the GMean and reduction rate.
  * @author pbexp
  */
 public class GAProblem extends AbstractBinaryProblem{
@@ -92,9 +92,8 @@ public class GAProblem extends AbstractBinaryProblem{
 
         ArrayList<Instances> tra = preprocessor.getTRAFoldAGMO();
         ArrayList<Instances> test = preprocessor.getTESTFoldAGMO();
-        
-        double[] results = classifier.classifySolution(s1, tra, test);
-        return results;
+
+        return classifier.classifySolution(s1, tra, test);
     }
 
     @Override

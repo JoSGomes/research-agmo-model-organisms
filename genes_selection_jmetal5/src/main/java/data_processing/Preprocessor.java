@@ -6,6 +6,8 @@
 package data_processing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import weka.core.Instances;
 
@@ -85,7 +87,6 @@ public class Preprocessor {
      */
     public ArrayList<Instances> getDatasetsTRAFolds() throws Exception{
         return FileHandler.readDatasetTRAFolds(organism, fold, this.runningDataset);
-        
     }
     
     /** Retorna todos os folds de teste genuínos.
@@ -96,6 +97,10 @@ public class Preprocessor {
     public ArrayList<Instances> getDatasetsTESTFolds() throws Exception{
          return FileHandler.readDatasetTESTFolds(organism, fold, this.runningDataset);
         
+    }
+
+    public HashMap<String, List<String>> getOrganismAncestors() throws Exception {
+        return FileHandler.readAncestors(organism);
     }
     
     /**Retorna o organismo atual que está em curso
