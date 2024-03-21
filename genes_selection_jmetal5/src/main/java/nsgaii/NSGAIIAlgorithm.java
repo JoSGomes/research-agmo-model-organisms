@@ -7,6 +7,7 @@ package nsgaii;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.List;
 
@@ -28,19 +29,22 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution;
  *
  * @author pbexp
  */
-public class NSGAIIAlgorithm implements Callable{
+public class NSGAIIAlgorithm implements Callable {
     Problem<BinarySolution> problem;
     NSGAII<BinarySolution> algorithm;
     
-// operators to SelectInstances problem
+    // operators to SelectInstances problem
     CrossoverOperator<BinarySolution> crossover;
     MutationOperator<BinarySolution> mutation;
     SelectionOperator<List<BinarySolution>, BinarySolution> selection;
     
     private final Preprocessor preprocessor;
-    // parameters AGMO SelectInstances
+
+    // parameters NSGA-II SelectInstances
     private final int populationSizeSelectInstances, maxEvaluationsSelectInstances;
     private final double probabilityCrossoverSelectInstances, probabilityMutationSelectInstances;
+
+    private HashMap<String, List<String>> ancestors;
     
     int indexThread;
     
@@ -54,8 +58,8 @@ public class NSGAIIAlgorithm implements Callable{
      * @param indexThread
      */
     public NSGAIIAlgorithm(Preprocessor preprocessor, int populationSizeSelectInstances, int maxEvaluationsSelectInstances,
-                           double probabilityCrossoverSelectInstances, double probabilityMutationSelectInstances, 
-                           int indexThread){
+                           double probabilityCrossoverSelectInstances, double probabilityMutationSelectInstances,
+                           HashMap<String, List<String>> ancestors, int indexThread){
         
         this.preprocessor = preprocessor;
         this.populationSizeSelectInstances = populationSizeSelectInstances;
@@ -63,6 +67,7 @@ public class NSGAIIAlgorithm implements Callable{
         this.probabilityCrossoverSelectInstances = probabilityCrossoverSelectInstances;
         this.probabilityMutationSelectInstances = probabilityMutationSelectInstances;
         this.indexThread = indexThread;
+        this.ancestors = ancestors;
     }
     
     @Override
@@ -72,19 +77,22 @@ public class NSGAIIAlgorithm implements Callable{
             solAndPopulation = execute();
         } 
         catch (Exception ex) {
-            System.err.println("NSGAII class > run method error: " + ex);
+            System.err.println("Classe: NSGAII > erro na execução do método: " + ex);
             System.exit(-1);
         }
         return solAndPopulation;
     }
     
-    public ArrayList execute() throws Exception, Exception
+    public ArrayList execute() throws Exception
     {          
             problem = new GAProblem(preprocessor);
-
-            crossover = new HUXCrossover(probabilityCrossoverSelectInstances);
-            mutation = new BitFlipMutation(probabilityMutationSelectInstances);     
-            selection = new BinaryTournamentSelection();
+            /*
+            * Adicionar a leitura da lista dos GO Termos do organismo, essa lista será utilizada no operador de mutação,
+            * possibilitando verificar os seus descendentes através do HashMap dos ancestrais.
+            * */
+            crossover = new HUXCrossover<>(probabilityCrossoverSelectInstances);
+            mutation = new BitFlipMutation<>(probabilityMutationSelectInstances);
+            selection = new BinaryTournamentSelection<>();
 
             algorithm = new NSGAIIBuilder<>(problem, crossover, mutation, populationSizeSelectInstances)
                     .setSelectionOperator(selection)
@@ -101,8 +109,13 @@ public class NSGAIIAlgorithm implements Callable{
             List<BinarySolution> population = algorithm.getResult();
 
             estimatedTime = System.currentTimeMillis() - initTime;
-            timeSelectInstances = (estimatedTime/1000) / 60.0;
-            System.out.println("Tempo para do Wrapper NSGAII: "+ timeSelectInstances + " minutos");
+            timeSelectInstances = ((estimatedTime/1000) / 60.0) / 60.0;
+
+            System.out.println("Propriedades do NSGA-II:\n" +
+                    "Probabilidade de Cruzamento: " + probabilityCrossoverSelectInstances + "\n" +
+                    "Probabilidade de Mutação: " + probabilityMutationSelectInstances + "\n" +
+                    "Tamanho da população: " + populationSizeSelectInstances);
+            System.out.println("Duração: " + timeSelectInstances + " horas");
 
             //Testar para a melhor solução gerada    
             int bestSolutionCounter = 0;
@@ -117,7 +130,7 @@ public class NSGAIIAlgorithm implements Callable{
                 }         
             }
 
-            BinarySolution bestSolution = population.get(bestSolutionCounter); 
+            BinarySolution bestSolution = population.get(bestSolutionCounter);
             ArrayList solAndPopulation = new ArrayList();
             solAndPopulation.add(bestSolution);
             solAndPopulation.add(population);

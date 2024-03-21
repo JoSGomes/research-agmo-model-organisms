@@ -80,13 +80,14 @@ public class ExpNSGAIIGAProblem {
 
                                 System.out.println(organism.originalDataset + " fold-" + n + " " + runningDataSet);
                                 Callable<Object> experiment = new NSGAIIAlgorithm(
-                                    preprocessor,
-                                    populationSize,
-                                    maxEvaluation,
-                                    probabilityCrossoverSelectInstances,
-                                    probabilityMutationSelectInstances,    
-                                    indexThread                        
-                                    );
+                                        preprocessor,
+                                        populationSize,
+                                        maxEvaluation,
+                                        probabilityCrossoverSelectInstances,
+                                        probabilityMutationSelectInstances,
+                                        ancestors,
+                                        indexThread
+                                );
 
                                 Future<Object> submit = executor.submit(experiment);
                                 results.put(indexThread, submit);

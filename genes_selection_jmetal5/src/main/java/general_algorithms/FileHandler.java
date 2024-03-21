@@ -316,7 +316,11 @@ public class FileHandler {
         resultsCSV.add(aux);
         writeResults(output);
     }
-    
+
+    public static List<String> readOrganismAttributes(ModelOrganism organism) {
+
+    }
+
     
     /**
      *
