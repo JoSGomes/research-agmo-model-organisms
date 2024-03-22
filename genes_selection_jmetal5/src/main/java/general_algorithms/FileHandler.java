@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import data_processing.ModelOrganism;
 
 import smile.glm.model.Model;
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -317,8 +318,22 @@ public class FileHandler {
         writeResults(output);
     }
 
-    public static List<String> readOrganismAttributes(ModelOrganism organism) {
+    public static List<String> readOrganismAttributes(ModelOrganism organism) throws Exception {
+        String file = PathOfDataset.root.path + organism.originalDataset + FileExtension.arff.extension;
 
+        DataSource source = new DataSource(file);
+        Instances data = source.getDataSet();
+        if(data.classIndex() == -1 ){
+            data.setClassIndex(data.numAttributes() -1);
+        }
+
+        List<String> attributes = new ArrayList<>();
+        for (int i = 0; i < data.numAttributes(); i++) {
+            Attribute attribute = data.attribute(i);
+            attributes.add(attribute.name());
+        }
+
+        return attributes;
     }
 
     

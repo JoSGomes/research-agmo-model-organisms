@@ -45,7 +45,7 @@ public class NSGAIIAlgorithm implements Callable {
     private final double probabilityCrossoverSelectInstances, probabilityMutationSelectInstances;
 
     private HashMap<String, List<String>> ancestors;
-    
+    private List<String> organismAttributes;
     int indexThread;
     
     /**
@@ -59,15 +59,16 @@ public class NSGAIIAlgorithm implements Callable {
      */
     public NSGAIIAlgorithm(Preprocessor preprocessor, int populationSizeSelectInstances, int maxEvaluationsSelectInstances,
                            double probabilityCrossoverSelectInstances, double probabilityMutationSelectInstances,
-                           HashMap<String, List<String>> ancestors, int indexThread){
+                           HashMap<String, List<String>> ancestors, List<String> organismAttributes, int indexThread){
         
         this.preprocessor = preprocessor;
         this.populationSizeSelectInstances = populationSizeSelectInstances;
         this.maxEvaluationsSelectInstances = maxEvaluationsSelectInstances;
         this.probabilityCrossoverSelectInstances = probabilityCrossoverSelectInstances;
         this.probabilityMutationSelectInstances = probabilityMutationSelectInstances;
-        this.indexThread = indexThread;
         this.ancestors = ancestors;
+        this.organismAttributes = organismAttributes;
+        this.indexThread = indexThread;
     }
     
     @Override

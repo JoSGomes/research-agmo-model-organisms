@@ -77,6 +77,7 @@ public class ExpNSGAIIGAProblem {
                             {
                                 preprocessor = new Preprocessor(organism, n, runningDataSet, runningClassifier);
                                 HashMap<String, List<String>> ancestors = preprocessor.getOrganismAncestors();
+                                List<String> organismAttributes = preprocessor.getOrganismAttributes();
 
                                 System.out.println(organism.originalDataset + " fold-" + n + " " + runningDataSet);
                                 Callable<Object> experiment = new NSGAIIAlgorithm(
@@ -86,6 +87,7 @@ public class ExpNSGAIIGAProblem {
                                         probabilityCrossoverSelectInstances,
                                         probabilityMutationSelectInstances,
                                         ancestors,
+                                        organismAttributes,
                                         indexThread
                                 );
 

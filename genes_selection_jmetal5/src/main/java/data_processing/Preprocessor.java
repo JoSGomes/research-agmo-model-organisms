@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import smile.glm.model.Model;
 import weka.core.Instances;
 
 import general_algorithms.Classifier;
@@ -101,6 +102,10 @@ public class Preprocessor {
 
     public HashMap<String, List<String>> getOrganismAncestors() throws Exception {
         return FileHandler.readAncestors(organism);
+    }
+
+    public List<String> getOrganismAttributes() throws Exception{
+        return FileHandler.readOrganismAttributes(organism);
     }
     
     /**Retorna o organismo atual que está em curso
