@@ -6,8 +6,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="jmetal-auto" />
+        <module name="jmetal-core" />
         <module name="genes_selection_jmetal5" />
+        <module name="jmetal-parallel" />
+        <module name="jmetal-problem" />
+        <module name="jmetal-algorithm" />
+        <module name="jmetal-component" />
+        <module name="jmetal-lab" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="jmetal-algorithm (1)" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

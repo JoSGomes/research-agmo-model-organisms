@@ -107,7 +107,7 @@ public class NSGAIIAlgorithm implements Callable {
 
             //Execute
             algorithm.run();
-            List<BinarySolution> population = algorithm.getResult();
+            List<BinarySolution> population = algorithm.result();
 
             estimatedTime = System.currentTimeMillis() - initTime;
             timeSelectInstances = ((estimatedTime/1000) / 60.0) / 60.0;

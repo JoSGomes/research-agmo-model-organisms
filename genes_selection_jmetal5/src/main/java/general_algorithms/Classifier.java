@@ -149,7 +149,7 @@ public class Classifier {
      */
     private ArrayList<Instances> getSelectedDatasetFromSolution(BinarySolution s1, ArrayList<Instances> dataSetFolds) throws IOException, Exception{
         cont = 0;
-        int bits = s1.getTotalNumberOfBits();
+        int bits = s1.totalNumberOfBits();
         List<BinarySet> sol = s1.variables();
         ArrayList<Integer> dellAttributes = new ArrayList<>();
          

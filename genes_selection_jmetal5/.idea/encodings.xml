@@ -3,5 +3,23 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-algorithm/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-algorithm/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-algorithm/target/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-algorithm/target/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-auto/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-auto/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-component/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-component/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-lab/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-lab/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-parallel/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-parallel/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-problem/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-problem/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../../../jMetal-main/jMetal-main/src/main/resources" charset="UTF-8" />
   </component>
 </project>

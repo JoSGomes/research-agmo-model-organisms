@@ -1,9 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-algorithm/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-algorithm/target/jmetal-algorithm-6.2.3-SNAPSHOT.pom" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-auto/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-parallel/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-component/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-core/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-problem/pom.xml" />
+        <option value="$PROJECT_DIR$/../../../jMetal-main/jMetal-main/jmetal-lab/pom.xml" />
       </list>
     </option>
   </component>

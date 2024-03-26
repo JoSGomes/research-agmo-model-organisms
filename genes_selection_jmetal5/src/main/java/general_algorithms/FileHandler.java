@@ -5,7 +5,7 @@
  */
 package general_algorithms;
 
-import com.opencsv.CSVWriter;
+//import com.opencsv.CSVWriter;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -20,9 +20,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.opencsv.CSVWriter;
 import data_processing.ModelOrganism;
 
-import smile.glm.model.Model;
+//import smile.glm.model.Model;
 import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;

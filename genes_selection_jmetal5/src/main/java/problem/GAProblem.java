@@ -18,9 +18,6 @@ import data_processing.Preprocessor;
 import general_algorithms.Classifier;
 
 
-
-
-
 /**
  *Objetivos: increase the GMean and reduction rate.
  * @author pbexp
@@ -32,6 +29,7 @@ public class GAProblem extends AbstractBinaryProblem{
     int numberOfVariables;
     int numberOfObjectives;
     int numberOfConstraints;
+    List<Integer> bitsPerVariable;
     String name;
     public GAProblem(Preprocessor preprocessor)
     {
@@ -41,7 +39,7 @@ public class GAProblem extends AbstractBinaryProblem{
         this.numberOfConstraints = 0;
         this.name = "Genes Selection";
 
-        List<Integer> bitsPerVariable = new ArrayList<>(this.numberOfVariables);
+        bitsPerVariable = new ArrayList<>(this.numberOfVariables);
 
         for (int var = 0; var < this.numberOfVariables; var++) {
           bitsPerVariable.add(1);
@@ -97,8 +95,8 @@ public class GAProblem extends AbstractBinaryProblem{
     }
 
     @Override
-    public List<Integer> listOfBitsPerVariable() {
-        return null;
+    public List<Integer> numberOfBitsPerVariable() {
+        return this.bitsPerVariable;
     }
 }
 

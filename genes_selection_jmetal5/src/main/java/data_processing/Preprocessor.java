@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import smile.glm.model.Model;
 import weka.core.Instances;
 
 import general_algorithms.Classifier;
