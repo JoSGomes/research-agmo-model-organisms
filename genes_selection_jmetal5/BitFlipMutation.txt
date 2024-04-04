@@ -1,0 +1,129 @@
+package org.uma.jmetal.operator.mutation.impl;
+
+import org.uma.jmetal.operator.mutation.MutationOperator;
+import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import org.uma.jmetal.util.errorchecking.Check;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
+import org.uma.jmetal.util.pseudorandom.RandomGenerator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * @author Antonio J. Nebro <antonio@lcc.uma.es>
+ * @version 1.0
+ * <p>
+ * This class implements a bit flip mutation operator.
+ */
+@SuppressWarnings("serial")
+public class BitFlipMutation<S extends BinarySolution> implements MutationOperator<S> {
+    private double mutationProbability;
+    private final RandomGenerator<Double> randomGenerator;
+
+    private HashMap<String, List<String>> ancestors;
+
+    private List<String> organismAttributes;
+
+    /**
+     * Constructor
+     */
+    public BitFlipMutation(double mutationProbability) {
+        this(mutationProbability, () -> JMetalRandom.getInstance().nextDouble());
+    }
+
+    /**
+     * Constructor
+     */
+    public BitFlipMutation(double mutationProbability, HashMap<String, List<String>> ancestors, List<String> organismAttributes) {
+        this(mutationProbability, () -> JMetalRandom.getInstance().nextDouble());
+        this.ancestors = ancestors;
+        this.organismAttributes = organismAttributes;
+    }
+
+    /**
+     * Constructor
+     */
+    public BitFlipMutation(double mutationProbability,
+                           RandomGenerator<Double> randomGenerator) {
+        Check.probabilityIsValid(mutationProbability);
+        Check.notNull(randomGenerator);
+
+        this.mutationProbability = mutationProbability;
+        this.randomGenerator = randomGenerator;
+    }
+
+    /* Getter */
+    @Override
+    public double mutationProbability() {
+        return mutationProbability;
+    }
+
+    /* Setters */
+    public void setMutationProbability(double mutationProbability) {
+        this.mutationProbability = mutationProbability;
+    }
+
+    /**
+     * Execute() method
+     */
+    @Override
+    public S execute(S solution) {
+        Check.notNull(solution);
+
+        doMutation(mutationProbability, solution);
+        return solution;
+    }
+
+    /**
+     * Perform the mutation operation
+     *
+     * @param probability Mutation setProbability
+     * @param solution    The solution to mutate
+     */
+    public void doMutation(double probability, S solution) {
+        for (int i = 0; i < solution.variables().size(); i++) {
+            for (int j = 0; j < solution.variables().get(i).getBinarySetLength(); j++) {
+                if (solution.variables().get(i).get(j)) {
+                    float corr = 0;
+                    ArrayList<Integer> AD = getDescSelected(this.organismAttributes.get(i)); // Lista dos index dos descendentes do gene no index J.
+
+                    if (!AD.isEmpty()) {
+                        for (int k = 0; k < solution.variables().size(); k++) { //Percorre todo o indivíduo procurando os genes que pertencem a lista do descendentes.
+                            for (int v = 0; v < solution.variables().get(i).getBinarySetLength(); v++) {
+                                if (AD.contains(v) && solution.variables().get(i).get(v)) { // Se encontrar e também for selecionado, então é efetuado o cálculo de correlação
+                                    corr = corr + correlation(i, k) / AD.size();
+                                }
+                            }
+                        }
+
+                        if (randomGenerator.getRandomValue() <= corr) {
+                            solution.variables().get(i).flip(j);
+                        }
+                    }
+                } else {
+                    if (randomGenerator.getRandomValue() <= probability) {
+                        solution.variables().get(i).flip(j);
+                    }
+                }
+
+            }
+        }
+    }
+
+    public ArrayList<Integer> getDescSelected(String gene) {
+        List<String> desc =  this.ancestors.get(gene);
+        ArrayList<Integer> descIndexes = new ArrayList<>();
+        for (String geneStr: desc) {
+            int index = this.organismAttributes.indexOf(geneStr);
+            if (index != -1) // Existem genes que tem descendentes que não estão no conjunto de genes do organismo (válido?)
+                descIndexes.add(index);
+        }
+        return descIndexes;
+    }
+
+    public float correlation(int t, int v) {
+
+        return 0.6F;
+    }
+}

@@ -92,7 +92,7 @@ public class NSGAIIAlgorithm implements Callable {
             * possibilitando verificar os seus descendentes através do HashMap dos ancestrais.
             * */
             crossover = new HUXCrossover<>(probabilityCrossoverSelectInstances);
-            mutation = new BitFlipMutation<>(probabilityMutationSelectInstances);
+            mutation = new BitFlipMutation<>(probabilityMutationSelectInstances, this.ancestors, this.organismAttributes);
             selection = new BinaryTournamentSelection<>();
 
             algorithm = new NSGAIIBuilder<>(problem, crossover, mutation, populationSizeSelectInstances)
