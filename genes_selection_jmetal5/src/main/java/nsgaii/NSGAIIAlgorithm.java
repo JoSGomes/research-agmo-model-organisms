@@ -25,6 +25,8 @@ import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.operator.crossover.impl.HUXCrossover;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import weka.core.Instances;
+
 /**
  *
  * @author pbexp
@@ -46,6 +48,7 @@ public class NSGAIIAlgorithm implements Callable {
 
     private HashMap<String, List<String>> ancestors;
     private List<String> organismAttributes;
+    private ArrayList<Instances> dataSet;
     int indexThread;
     
     /**
@@ -59,7 +62,7 @@ public class NSGAIIAlgorithm implements Callable {
      */
     public NSGAIIAlgorithm(Preprocessor preprocessor, int populationSizeSelectInstances, int maxEvaluationsSelectInstances,
                            double probabilityCrossoverSelectInstances, double probabilityMutationSelectInstances,
-                           HashMap<String, List<String>> ancestors, List<String> organismAttributes, int indexThread){
+                           HashMap<String, List<String>> ancestors, List<String> organismAttributes, ArrayList<Instances> dataSet, int indexThread){
         
         this.preprocessor = preprocessor;
         this.populationSizeSelectInstances = populationSizeSelectInstances;
@@ -68,6 +71,7 @@ public class NSGAIIAlgorithm implements Callable {
         this.probabilityMutationSelectInstances = probabilityMutationSelectInstances;
         this.ancestors = ancestors;
         this.organismAttributes = organismAttributes;
+        this.dataSet = dataSet;
         this.indexThread = indexThread;
     }
     
@@ -92,7 +96,7 @@ public class NSGAIIAlgorithm implements Callable {
             * possibilitando verificar os seus descendentes através do HashMap dos ancestrais.
             * */
             crossover = new HUXCrossover<>(probabilityCrossoverSelectInstances);
-            mutation = new BitFlipMutation<>(probabilityMutationSelectInstances, this.ancestors, this.organismAttributes);
+            mutation = new BitFlipMutation<>(probabilityMutationSelectInstances, this.ancestors, this.organismAttributes, this.dataSet);
             selection = new BinaryTournamentSelection<>();
 
             algorithm = new NSGAIIBuilder<>(problem, crossover, mutation, populationSizeSelectInstances)

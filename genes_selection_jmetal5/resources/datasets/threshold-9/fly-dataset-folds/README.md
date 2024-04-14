@@ -1,4 +1,0 @@
-# Sobre este diretório
-
-
-

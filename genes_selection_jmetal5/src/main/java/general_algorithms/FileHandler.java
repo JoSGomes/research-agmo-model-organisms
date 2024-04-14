@@ -82,8 +82,8 @@ public class FileHandler {
     {
         ArrayList<Instances> foldData = new ArrayList<>();
 
-        String file = PathOfDataset.root + runningDataset + organism.originalDataset
-                + PathOfDataset.rootTRAandTESTAGMO + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath + FileExtension.arff;
+        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset
+                + PathOfDataset.rootTRAandTESTAGMO.path + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
 
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
