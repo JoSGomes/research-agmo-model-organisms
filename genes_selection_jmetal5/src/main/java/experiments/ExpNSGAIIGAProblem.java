@@ -46,7 +46,7 @@ public class ExpNSGAIIGAProblem {
         //Controle dos datasets
         Preprocessor preprocessor = null;
         numberOfThreads = calculateNumThreads(numberOfFolds);
-        String[] dataSet = {"", "threshold-3\\", "threshold-4\\", "threshold-5\\", "threshold-6\\", "threshold-7\\", "threshold-8\\"};
+        String[] dataSet = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
         String[] classifier = {"KNN", "NB", "J48"};
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
         System.out.println("Using " + numberOfThreads + " threads for parallel execution.");

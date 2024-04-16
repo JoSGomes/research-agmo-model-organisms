@@ -10,10 +10,10 @@ package data_processing;
  * @author pbexp
  */
 public enum ModelOrganism {
-    Fly("fly"),
-    Mouse("mouse"),
-    Worm("worm"),
-    Yeast("yeast");
+    Fly("Drosophila melanogaster"),
+    Mouse("Mus musculus"),
+    Worm("Caenorhabditis elegans"),
+    Yeast("Saccharomyces cerevisiae");
 	
     public final String originalDataset;
     
