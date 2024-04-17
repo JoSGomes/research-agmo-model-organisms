@@ -88,8 +88,8 @@ public class GAProblem extends AbstractBinaryProblem{
     public double[] evalF(Preprocessor preprocessor, BinarySolution s1) throws Exception{
         Classifier classifier = preprocessor.getClassifier();
 
-        ArrayList<Instances> tra = preprocessor.getTRAFoldAGMO();
-        ArrayList<Instances> tst = preprocessor.getTESTFoldAGMO();
+        List<Instances> tra = preprocessor.getTRAFoldAGMO();
+        List<Instances> tst = preprocessor.getTESTFoldAGMO();
 
         return classifier.classifySolution(s1, tra, tst);
     }

@@ -25,7 +25,12 @@ public class Preprocessor {
     private Classifier classifier;
     private final String runningDataset;
     private final String runningClassifier;
-
+    private HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDataset;
+    private HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasetAGMO;
+    private HashMap<String, List<String>> ascTerms;
+    private HashMap<String, List<String>> descTerms;
+    private HashMap<String, List<String>> megerdADTerms;
+    private List<String> organismAttributes;
     /**
      *
      * @param organism
@@ -34,80 +39,75 @@ public class Preprocessor {
      * @param runningClassifier
      * @throws Exception
      */
-    public Preprocessor(ModelOrganism organism, int fold, String runningDataSet, String runningClassifier) throws Exception{
-        this.fold = fold;
-        this.numAtributes = FileHandler.readDatasetTESTFoldAGMO(organism, fold, runningDataSet).get(0).numAttributes() - 1;
-        this.organism = organism;
-        this.runningDataset = runningDataSet;
+    public Preprocessor(ModelOrganism organism, int fold, String runningDataSet, String[] ableDatasets, String runningClassifier) throws Exception {
+        this.allDataset = FileHandler.readAllDatasetsFolds(ableDatasets, false); // Todos os datasets para avaliar o modelo
+        this.allDatasetAGMO = FileHandler.readAllDatasetsFolds(ableDatasets, true); // Todos os datasets para otimização do AGMO
+        this.runningClassifier = runningClassifier; //NB, KNN, J48
+        this.runningDataset = runningDataSet; //BP, MF, CC, BPMF, BPCC, MFCC, BPMFCC
+        this.organism = organism; // Caenorhabditis elegans, Drosophila melanogaster, Mus musculus, Saccharomyces cerevisiae
         this.classifier = null;
-        this.runningClassifier = runningClassifier;
-        
+        this.fold = fold; // Fold atual de execução
+        this.numAtributes = allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst").get(this.fold).get(0).numAttributes() - 1;
+        this.ascTerms = this.getOrganismAncestors(false);
+        this.descTerms = this.getOrganismAncestors(true);
+        this.megerdADTerms = this.mergeADTerms();
+        this.organismAttributes = this.getOrganismAttributesFromInstance();
     }
     
-    public ArrayList<Instances> getTRAFoldAGMO() throws Exception{
-        return FileHandler.readDatasetTRAFoldAGMO(organism, fold, this.runningDataset);
+    public List<Instances> getTRAFoldAGMO() {
+        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
     }
     
-    public ArrayList<Instances> getTESTFoldAGMO() throws Exception{    
-        return FileHandler.readDatasetTESTFoldAGMO(organism, fold, this.runningDataset);  
+    public List<Instances> getTESTFoldAGMO() throws Exception{
+        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
     }
     
-    public ArrayList<Instances> getFoldTRAGridSearch() throws Exception{
-        return FileHandler.readFoldGridSearch(organism, fold, true);
+    public List<Instances> getFoldTRAGridSearch() throws Exception{
+        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
     }
     
-    public ArrayList<Instances> getFoldTESTGridSearch() throws Exception{
-        return FileHandler.readFoldGridSearch(organism, fold, false);
-    }
-    
-    /** Retorna o fold de treino genuínos.
-     * 
-     * @return ArrayList com apenas um elemento.
-     * @throws Exception
-     */
-    public Instances getDatasetsTRAFold() throws Exception{
-        return FileHandler.readDatasetTRAFold(organism, fold, this.runningDataset);
-        
-    }
-    
-    /** Retorna o fold de teste genuínos.
-     *
-     * @return ArrayList com apenas um elemento.
-     * @throws Exception
-     */
-    public ArrayList<Instances> getDatasetsTESTFold() throws Exception{
-         return FileHandler.readDatasetTESTFold(organism, fold, this.runningDataset);
-        
+    public List<Instances> getFoldTESTGridSearch() throws Exception{
+        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
     }
     
     /** Retorna todos os folds de treino.
      * 
-     * @return Retorna uma lista objetos do tipo Instances (Weka Class)
+     * @return Lista de Instances
      * @throws Exception
      */
-    public ArrayList<Instances> getDatasetsTRAFolds() throws Exception{
-        return FileHandler.readDatasetTRAFolds(organism, fold, this.runningDataset);
+    public List<Instances> getDatasetsTRAFolds() throws Exception{
+        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
     }
     
     /** Retorna todos os folds de teste genuínos.
      *
-     * @return Retorna uma lista objetos do tipo Instances (Weka Class)
+     * @return Lista de Instances
      * @throws Exception
      */
-    public ArrayList<Instances> getDatasetsTESTFolds() throws Exception{
-         return FileHandler.readDatasetTESTFolds(organism, fold, this.runningDataset);
+    public List<Instances> getDatasetsTESTFolds() throws Exception{
+         return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
         
     }
 
-    public HashMap<String, List<String>> getOrganismAncestors() throws Exception {
-        return FileHandler.readAncestors(organism);
+    private HashMap<String, List<String>> getOrganismAncestors(boolean desc) throws Exception {
+        return FileHandler.readAncestors(this.organism.originalDataset, this.runningDataset, desc);
     }
 
-    public List<String> getOrganismAttributes() throws Exception{
-        return FileHandler.readOrganismAttributes(organism);
+    private List<String> getOrganismAttributesFromInstance() throws Exception{
+        // Tanto faz se vai ser de treino ou teste, basta ser apenas do organismo e dataset correto (BP, MF...), pois aqui está buscando-se somente os attributos.
+        return FileHandler.readOrganismAttributes(this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(0));
     }
-    
-    /**Retorna o organismo atual que está em curso
+
+    private HashMap<String, List<String>> mergeADTerms() {
+        HashMap<String, List<String>> result = new HashMap<>(this.ascTerms);
+        this.descTerms.forEach((key, value) -> result.merge(key, value, (list1, list2) -> {
+            list1.addAll(list2);
+            return list1;
+        }));
+
+        return result;
+    }
+    /** Retorna o organismo atual que está em curso
      *
      * @return Retorna um enum ModelOrganism com o organismo atual em curso.
      */
@@ -130,6 +130,7 @@ public class Preprocessor {
     /** Retorna o número de atributos do dataset do organismo em questão
      *
      * @return Inteiro que corresponde ao número de atributos.
+     *
      */
     public int getNumAttributes(){
         return this.numAtributes;
@@ -137,5 +138,21 @@ public class Preprocessor {
     
     public int getFold(){
         return this.fold;
+    }
+
+    public HashMap<String, List<String>> getAscTerms(){
+        return this.ascTerms;
+    }
+
+    public HashMap<String, List<String>> getDescTerms(){
+        return this.descTerms;
+    }
+
+    public List<String> getOrganismAttributes(){
+        return this.organismAttributes;
+    }
+
+    public HashMap<String, List<String>> getMegerdADTerms(){
+        return this.megerdADTerms;
     }
 }

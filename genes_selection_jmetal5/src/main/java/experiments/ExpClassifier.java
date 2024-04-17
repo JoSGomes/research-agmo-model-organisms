@@ -23,23 +23,23 @@ public class ExpClassifier {
     
     public static void main(String[] args) throws InterruptedException, ExecutionException, Exception{
         int folds = 10;
-        for(ModelOrganism organism : ModelOrganism.values())
-        {
-            for(int i = 0; i < folds; i++){
-                Preprocessor p1 = new Preprocessor(organism, i, "", "");
-                Classifier c1 = p1.getClassifier();
-                
-                ArrayList<Instances> tra = p1.getDatasetsTRAFolds();
-                ArrayList<Instances> test = p1.getDatasetsTESTFolds();
-                
-                double[] results = c1.classifyResult(tra, test);
-                
-                FileHandler.saveResults("", 0, 0, 0, results, organism.originalDataset, i, 0);
-            }
-            
-            
-            
-        }
+//        for(ModelOrganism organism : ModelOrganism.values())
+//        {
+//            for(int i = 0; i < folds; i++){
+//                Preprocessor p1 = new Preprocessor(organism, i, "", "");
+//                Classifier c1 = p1.getClassifier();
+//
+//                ArrayList<Instances> tra = p1.getDatasetsTRAFolds();
+//                ArrayList<Instances> test = p1.getDatasetsTESTFolds();
+//
+//                double[] results = c1.classifyResult(tra, test);
+//
+//                FileHandler.saveResults("", 0, 0, 0, results, organism.originalDataset, i, 0);
+//            }
+//
+//
+//
+//        }
         
         
         

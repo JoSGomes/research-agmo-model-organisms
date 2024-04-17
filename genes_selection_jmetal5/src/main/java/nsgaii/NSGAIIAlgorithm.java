@@ -46,9 +46,10 @@ public class NSGAIIAlgorithm implements Callable {
     private final int populationSizeSelectInstances, maxEvaluationsSelectInstances;
     private final double probabilityCrossoverSelectInstances, probabilityMutationSelectInstances;
 
-    private HashMap<String, List<String>> ancestors;
+    private HashMap<String, List<String>> ADTerms;
+
     private List<String> organismAttributes;
-    private ArrayList<Instances> dataSet;
+    private List<Instances> dataSet;
     int indexThread;
     
     /**
@@ -61,17 +62,16 @@ public class NSGAIIAlgorithm implements Callable {
      * @param indexThread
      */
     public NSGAIIAlgorithm(Preprocessor preprocessor, int populationSizeSelectInstances, int maxEvaluationsSelectInstances,
-                           double probabilityCrossoverSelectInstances, double probabilityMutationSelectInstances,
-                           HashMap<String, List<String>> ancestors, List<String> organismAttributes, ArrayList<Instances> dataSet, int indexThread){
+                           double probabilityCrossoverSelectInstances, double probabilityMutationSelectInstances, int indexThread) {
         
         this.preprocessor = preprocessor;
         this.populationSizeSelectInstances = populationSizeSelectInstances;
         this.maxEvaluationsSelectInstances = maxEvaluationsSelectInstances;
         this.probabilityCrossoverSelectInstances = probabilityCrossoverSelectInstances;
         this.probabilityMutationSelectInstances = probabilityMutationSelectInstances;
-        this.ancestors = ancestors;
-        this.organismAttributes = organismAttributes;
-        this.dataSet = dataSet;
+        this.organismAttributes = this.preprocessor.getOrganismAttributes();
+        this.dataSet = this.preprocessor.getTRAFoldAGMO();
+        this.ADTerms = this.preprocessor.getMegerdADTerms();
         this.indexThread = indexThread;
     }
     
@@ -91,12 +91,8 @@ public class NSGAIIAlgorithm implements Callable {
     public ArrayList execute() throws Exception
     {          
             problem = new GAProblem(preprocessor);
-            /*
-            * Adicionar a leitura da lista dos GO Termos do organismo, essa lista será utilizada no operador de mutação,
-            * possibilitando verificar os seus descendentes através do HashMap dos ancestrais.
-            * */
             crossover = new HUXCrossover<>(probabilityCrossoverSelectInstances);
-            mutation = new BitFlipMutation<>(probabilityMutationSelectInstances, this.ancestors, this.organismAttributes, this.dataSet);
+            mutation = new BitFlipMutation<>(probabilityMutationSelectInstances, this.ADTerms, this.organismAttributes, this.dataSet);
             selection = new BinaryTournamentSelection<>();
 
             algorithm = new NSGAIIBuilder<>(problem, crossover, mutation, populationSizeSelectInstances)

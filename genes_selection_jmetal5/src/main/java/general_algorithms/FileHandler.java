@@ -13,10 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,11 +30,11 @@ import weka.core.converters.ConverterUtils.DataSource;
  * @author pbexp
  */
 public class FileHandler {
-    
+
     /**
      *
      */
-    public static List<String[]> resultsCSV = new ArrayList<String[]>(); 
+    public static List<String[]> resultsCSV = new ArrayList<String[]>();
 
     /**
      *
@@ -70,6 +67,61 @@ public class FileHandler {
         }
     }
 
+    public static HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> readAllDatasetsFolds(String[] datasets, boolean agmo) throws Exception {
+        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = new HashMap<>();
+        HashMap<String, HashMap<String, List<Instances>>> typeDatasetMap =  new HashMap<>();
+        HashMap<String, List<Instances>> datasetListMap = new HashMap<>();
+        String typeDataset = "folds";
+        if (agmo) {
+            typeDataset = "folds-agmo";
+        }
+        int folds = 10;
+        for (ModelOrganism o : ModelOrganism.values()) {
+                for (String dataset: datasets) {
+                    String pathDataTra = "";
+                    String pathDataTst = "";
+                    List<Instances> listTra = new ArrayList<>();
+                    List<Instances> listTst = new ArrayList<>();
+                    for (int n = 0; n < folds; n++){
+
+
+                        pathDataTra = PathOfDataset.root.path +
+                                        o.originalDataset + "\\" +
+                                typeDataset + "\\" + dataset + "\\" + o.name().toLowerCase() +
+                                        "-" + dataset + "_fold_" + n + "_tra" + FileExtension.arff.extension;
+
+                        pathDataTst = PathOfDataset.root.path +
+                                o.originalDataset + "\\" +
+                                typeDataset + "\\" + dataset + "\\" +o.name().toLowerCase() +
+                                "-" + dataset + "_fold_" + n + "_tst" + FileExtension.arff.extension;
+
+                        DataSource sourceTra = new DataSource(pathDataTra);
+                        DataSource sourceTst = new DataSource(pathDataTst);
+                        Instances dataTra = sourceTra.getDataSet();
+                        Instances dataTst = sourceTst.getDataSet();
+
+                        if(dataTra.classIndex() == -1 ){
+                            dataTra.setClassIndex(0);
+                        }
+                        if(dataTst.classIndex() == -1 ){
+                            dataTst.setClassIndex(0);
+                        }
+                        listTra.add(dataTra);
+                        listTst.add(dataTst);
+                    }
+
+                    datasetListMap.put("tra", listTra);
+                    datasetListMap.put("tst", listTst);
+                    typeDatasetMap.put(dataset, datasetListMap);
+
+                    allDatasets.put(o.originalDataset, typeDatasetMap);
+                }
+
+        }
+        return allDatasets;
+    }
+
+
     /**
      *
      * @param organism
@@ -88,14 +140,14 @@ public class FileHandler {
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
         if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);           
+            data.setClassIndex(data.numAttributes() -1);
         }
         foldData.add(data);
-        
-        
+
+
         return foldData;
     }
-    
+
     /**
      *
      * @param organism
@@ -114,16 +166,16 @@ public class FileHandler {
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
         if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);           
+            data.setClassIndex(data.numAttributes() -1);
         }
         foldData.add(data);
-        
-        
+
+
         return foldData;
     }
-    
+
     /**
-     * Retorna o uma ArrayList com apenas um elemento que corresponde ao Fold 
+     * Retorna o uma ArrayList com apenas um elemento que corresponde ao Fold
      * especificado de treino  dos dados de teste da melhor solução resultada
      * do AGMO.
      * @param organism Organismo que se deseja extrair os dados.
@@ -133,7 +185,7 @@ public class FileHandler {
      * @throws Exception
      */
     public static Instances readDatasetTRAFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-        
+
         Instances data;
 
         String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
@@ -141,14 +193,14 @@ public class FileHandler {
 
         data = new Instances(new BufferedReader(new FileReader(file)));
         if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);           
+            data.setClassIndex(data.numAttributes() -1);
         }
-        
+
         return data;
     }
-    
+
     /**
-     * Retorna o uma ArrayList com apenas um elemento que corresponde ao Fold 
+     * Retorna o uma ArrayList com apenas um elemento que corresponde ao Fold
      * especificado de teste  dos dados de teste da melhor solução resultada
      * do AGMO.
      * @param organism Organismo que se deseja extrair os dados.
@@ -158,7 +210,7 @@ public class FileHandler {
      * @throws Exception
      */
     public static ArrayList<Instances> readDatasetTESTFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-        
+
         ArrayList<Instances> foldsData = new ArrayList<>();
 
         String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
@@ -168,14 +220,14 @@ public class FileHandler {
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
         if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);           
+            data.setClassIndex(data.numAttributes() -1);
         }
         foldsData.add(data);
-        
-        
+
+
         return foldsData;
     }
-    
+
     /**
      *
      * @param organism
@@ -185,7 +237,7 @@ public class FileHandler {
      * @throws Exception
      */
     public static ArrayList<Instances> readDatasetTRAFolds(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-        
+
         ArrayList<Instances> foldsData = new ArrayList<>();
 
         String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
@@ -194,14 +246,14 @@ public class FileHandler {
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
         if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);           
+            data.setClassIndex(data.numAttributes() -1);
         }
         foldsData.add(data);
-        
-        
+
+
         return foldsData;
     }
-    
+
     /**
      *
      * @param organism
@@ -219,13 +271,13 @@ public class FileHandler {
         DataSource source = new DataSource(file);
         Instances data = source.getDataSet();
         if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);           
+            data.setClassIndex(data.numAttributes() -1);
         }
         foldsData.add(data);
-        
+
         return foldsData;
     }
-    
+
     /**
      *
      * @param organism
@@ -252,14 +304,14 @@ public class FileHandler {
             DataSource source = new DataSource(file);
             Instances fold = source.getDataSet();
             if(fold.classIndex() == -1 ){
-                fold.setClassIndex(fold.numAttributes() -1);           
+                fold.setClassIndex(fold.numAttributes() -1);
             }
             foldData.add(fold);
         }
 
         return foldData;
     }
-   
+
     /**
      *
      * @param output
@@ -280,32 +332,32 @@ public class FileHandler {
         String mutation = Double.toString(mutationA);
         String crossover = Double.toString(crossoverA);
         String populationSize = Integer.toString(populationSizeA);
-        
+
         double GMean = results[0];
         double ratioReduction = results[1];
         GMean = GMean * (-1);
         ratioReduction = ratioReduction * (-1);
-        
+
         String[] aux = {organism, populationSize, mutation, crossover, Integer.toString(fold), Double.toString(GMean), Double.toString(bestGMean), Double.toString(ratioReduction)};
         resultsCSV.add(aux);
         writeResults(output);
     }
-    
+
     /**
      *
      * @param output Nome da saída
      */
-    public static void writeResults(String output){    
-        try{ 
+    public static void writeResults(String output){
+        try{
             try (Writer writer = new FileWriter(output); CSVWriter csvWriter = new CSVWriter(writer)) {
                 csvWriter.writeAll(resultsCSV);
             }
         } catch (IOException ex) {
             Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
+
     public static void saveResults(String output, double[] results, String organism, int fold){
         if(resultsCSV.isEmpty()){
             String[] headers = new String[]{"organism", "populationSize","mutationProbability", "crossoverProbability", "Fold", "GMean" , "Best GMean AGMO", "ratioReduction"};
@@ -319,15 +371,7 @@ public class FileHandler {
         writeResults(output);
     }
 
-    public static List<String> readOrganismAttributes(ModelOrganism organism) throws Exception {
-        String file = PathOfDataset.root.path + organism.originalDataset + FileExtension.arff.extension;
-
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);
-        }
-
+    public static List<String> readOrganismAttributes(Instances data) throws Exception {
         List<String> attributes = new ArrayList<>();
         for (int i = 0; i < data.numAttributes(); i++) {
             Attribute attribute = data.attribute(i);
@@ -337,7 +381,7 @@ public class FileHandler {
         return attributes;
     }
 
-    
+
     /**
      *
      * @param organism Organismo no qual será realizada a leitura dos ancestrais de cada GO Termo.
@@ -345,10 +389,14 @@ public class FileHandler {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static HashMap<String, List<String>> readAncestors(ModelOrganism organism) throws FileNotFoundException, IOException{
+    public static HashMap<String, List<String>> readAncestors(String organism, String runningDataset, boolean desc) throws FileNotFoundException, IOException{
         HashMap<String, List<String>> organismAncestorsGOTerms = new HashMap<>();
+        String pathToDAG = "ASC";
+        if (desc) {
+            pathToDAG = "DESC";
+        }
 
-        String file = PathOfDataset.root.path + "gene_ancestors_" + organism.originalDataset + FileExtension.txt.extension;
+        String file = PathOfDataset.root.path  + organism + "\\DAG\\"+ pathToDAG + "\\" + "DAG-" + runningDataset + "-" + pathToDAG + FileExtension.txt.extension;
         BufferedReader readingFile = new BufferedReader(new FileReader(file));
 
         String line;
@@ -360,8 +408,8 @@ public class FileHandler {
 
             List<String> ancestors = new ArrayList<>(Arrays.asList(terms).subList(1, terms.length));
             organismAncestorsGOTerms.put(mainTerm, ancestors);
-        } 
-        
+        }
+
         return organismAncestorsGOTerms;
     }
 

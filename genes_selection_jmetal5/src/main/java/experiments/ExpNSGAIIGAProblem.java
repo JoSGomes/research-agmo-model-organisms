@@ -46,12 +46,13 @@ public class ExpNSGAIIGAProblem {
         //Controle dos datasets
         Preprocessor preprocessor = null;
         numberOfThreads = calculateNumThreads(numberOfFolds);
-        String[] dataSet = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
+        String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
         String[] classifier = {"KNN", "NB", "J48"};
+
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
         System.out.println("Using " + numberOfThreads + " threads for parallel execution.");
 
-        for(String runningDataSet : dataSet){
+        for(String runningDataSet : dataSets){
             for(String runningClassifier : classifier){
                 for(ModelOrganism organism : ModelOrganism.values()){
                     double probabilityCrossoverSelectInstances = 0;
@@ -75,21 +76,17 @@ public class ExpNSGAIIGAProblem {
                             }
                             try 
                             {
-                                preprocessor = new Preprocessor(organism, n, runningDataSet, runningClassifier);
-                                HashMap<String, List<String>> ancestors = preprocessor.getOrganismAncestors();
-                                List<String> organismAttributes = preprocessor.getOrganismAttributes();
-                                ArrayList<Instances> dataSetToMutation = preprocessor.getTRAFoldAGMO();
+                                System.out.println("Reading all the data...");
+                                preprocessor = new Preprocessor(organism, n, runningDataSet, dataSets, runningClassifier);
+                                System.out.println("The read have been complete and the data are into memory!");
 
-                                System.out.println(organism.originalDataset + " fold-" + n + " " + runningDataSet);
+                                System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet + "// fold-" + n + " " + runningDataSet);
                                 Callable<Object> experiment = new NSGAIIAlgorithm(
                                         preprocessor,
                                         populationSize,
                                         maxEvaluation,
                                         probabilityCrossoverSelectInstances,
                                         probabilityMutationSelectInstances,
-                                        ancestors,
-                                        organismAttributes,
-                                        dataSetToMutation,
                                         indexThread
                                 );
 
@@ -126,8 +123,8 @@ public class ExpNSGAIIGAProblem {
                             }         
                         }
                         
-                        ArrayList<Instances> trainFold = preprocessor.getDatasetsTRAFolds();                  
-                        ArrayList<Instances> testFold = preprocessor.getDatasetsTESTFolds();
+                        List<Instances> trainFold = preprocessor.getDatasetsTRAFolds();
+                        List<Instances> testFold = preprocessor.getDatasetsTESTFolds();
 
                         solAndPopulation = (ArrayList) results.get(bestSolutionCounter).get();
                         List<BinarySolution> population = (List<BinarySolution>) solAndPopulation.get(1); //Para o VAR e FUN

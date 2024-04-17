@@ -68,26 +68,26 @@ public class Classifier {
         return null;
     }
     
-    public double[] classifySolution(BinarySolution bestSolution, ArrayList<Instances> trainFolds, ArrayList<Instances> testFolds) throws Exception{
+    public double[] classifySolution(BinarySolution bestSolution, List<Instances> trainFolds, List<Instances> testFolds) throws Exception{
         switch(this.runningClassifier){
             case "KNN" -> {
                 IBk classifier = new IBk(1);
                 JaccardDistance jdDist = new JaccardDistance();
                 classifier.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
-                ArrayList<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
-                ArrayList<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
+                List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
+                List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
                 return calcGMeanRatioReduction(classifier, traData, testData);
             }
             case "NB" -> {
                 NaiveBayes classifier = new NaiveBayes();
-                ArrayList<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
-                ArrayList<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
+                List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
+                List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
                 return calcGMeanRatioReduction(classifier, traData, testData);
             }
             case "J48" -> {
                 J48 classifier = new J48();
-                ArrayList<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
-                ArrayList<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
+                List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
+                List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
                 return calcGMeanRatioReduction(classifier, traData, testData);
             }
         }
@@ -102,7 +102,7 @@ public class Classifier {
      * de Distância a de Jaccard.
      * @return Retorna a GMean e a Reduction Ratio.
      */
-    private double[] calcGMeanRatioReduction(AbstractClassifier classifier, ArrayList<Instances> tra, ArrayList<Instances> test) throws Exception {
+    private double[] calcGMeanRatioReduction(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg;
         double sensivity, specificity;
         double reductionRatio;
@@ -147,11 +147,11 @@ public class Classifier {
      * @throws IOException
      * @throws Exception
      */
-    private ArrayList<Instances> getSelectedDatasetFromSolution(BinarySolution s1, ArrayList<Instances> dataSetFolds) throws IOException, Exception{
+    private List<Instances> getSelectedDatasetFromSolution(BinarySolution s1, List<Instances> dataSetFolds) throws IOException, Exception{
         cont = 0;
         int bits = s1.totalNumberOfBits();
         List<BinarySet> sol = s1.variables();
-        ArrayList<Integer> dellAttributes = new ArrayList<>();
+        List<Integer> dellAttributes = new ArrayList<>();
          
         for(int i = 0; i < bits; i++)
         {
@@ -176,7 +176,7 @@ public class Classifier {
         return deleteAttributes(dataSetFolds, indicesArray);
     }  
     
-    private ArrayList<Instances> deleteAttributes(ArrayList<Instances> selectedDatasetFolds, int[] indices) throws Exception 
+    private List<Instances> deleteAttributes(List<Instances> selectedDatasetFolds, int[] indices) throws Exception
     {
         Remove removeFilter = new Remove();
         removeFilter.setAttributeIndicesArray(indices);
@@ -251,14 +251,14 @@ public class Classifier {
      * e na Segunda a Reduction Ratio.
      * @throws Exception
      */
-    public double[] classifyKNNGridSearch(BinarySolution s1, ArrayList<Instances> tra, ArrayList<Instances> test) throws Exception {
+    public double[] classifyKNNGridSearch(BinarySolution s1, List<Instances> tra, List<Instances> test) throws Exception {
         IBk knn = new IBk(1);
 	JaccardDistance jdDist = new JaccardDistance();
 	
         knn.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
         
-        ArrayList<Instances> traFold = this.getSelectedDatasetFromSolution(s1, tra);
-        ArrayList<Instances> testFold = this.getSelectedDatasetFromSolution(s1, test);
+        List<Instances> traFold = this.getSelectedDatasetFromSolution(s1, tra);
+        List<Instances> testFold = this.getSelectedDatasetFromSolution(s1, test);
         
 	return this.crossValidationGridSearch(knn, traFold, testFold);
         
@@ -273,7 +273,7 @@ public class Classifier {
      * @return Retorna a GMean e a Reduction Ratio.
      * @throws Exception
      */
-    private double[] crossValidationGridSearch(AbstractClassifier classifier, ArrayList<Instances> tra, ArrayList<Instances> test) throws Exception {
+    private double[] crossValidationGridSearch(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg, totalSpe = 0, totalSen = 0;
         double sensivity; 
         double specificity;
