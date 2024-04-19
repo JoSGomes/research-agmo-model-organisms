@@ -65,22 +65,26 @@ public class ExpNSGAIIGAProblem {
                             //Parâmetros do NSGAII                         
                             switch (organism.originalDataset) 
                             {
-                                case "fly", "yeast" -> {
+                                case "Drosophila melanogaster", "Saccharomyces cerevisiae" -> {
                                     probabilityMutationSelectInstances = 0.2;
                                     probabilityCrossoverSelectInstances = 0.5;
                                 }
-                                case "mouse", "worm" -> {
+                                case "Mus musculus", "Caenorhabditis elegans" -> {
                                     probabilityMutationSelectInstances = 0.2;
                                     probabilityCrossoverSelectInstances = 0.9;
                                 }
                             }
                             try 
                             {
+                                System.out.print("\n##########################################\n");
                                 System.out.println("Reading all the data...");
                                 preprocessor = new Preprocessor(organism, n, runningDataSet, dataSets, runningClassifier);
+
                                 System.out.println("The read have been complete and the data are into memory!");
 
-                                System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet + "// fold-" + n + " " + runningDataSet);
+                                System.out.println("Starting... " + organism.originalDataset + " // fold-" + n + " " + runningDataSet);
+                                System.out.println("##########################################");
+
                                 Callable<Object> experiment = new NSGAIIAlgorithm(
                                         preprocessor,
                                         populationSize,
