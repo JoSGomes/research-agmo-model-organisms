@@ -8,6 +8,7 @@ package general_algorithms;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import data_processing.Preprocessor;
@@ -105,22 +106,22 @@ public class Classifier {
     private double[] calcGMeanRatioReduction(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg;
         double sensivity, specificity;
-        double reductionRatio;
+        double selectionRatio;
         double GMean;
         Random rData = new Random();
         Instances trainSet, testSet;
         Evaluation eval;
-                  
+        //Cross-Validation?
         trainSet = tra.get(0);
         testSet = test.get(0);
         
         trainSet.randomize(rData);
         testSet.randomize(rData);
         
-        eval = new Evaluation(trainSet);    
+        eval = new Evaluation(trainSet);
         classifier.buildClassifier(trainSet);
         eval.evaluateModel(classifier, testSet);
-      
+
         truePos = eval.numTruePositives(1);
         trueNeg = eval.numTrueNegatives(1);
         falsePos = eval.numFalsePositives(1);
@@ -131,11 +132,11 @@ public class Classifier {
         
         GMean = (Math.round((Math.sqrt(sensivity * specificity))*10000.00)/10000.00)*100.00;
         
-        reductionRatio =  ( this.preProcessor.getNumAttributes() - cont) 
+        selectionRatio =  ( this.preProcessor.getNumAttributes() - cont)
                            / (double) this.preProcessor.getNumAttributes();
         
         
-        double[] results = {GMean, reductionRatio};
+        double[] results = {GMean, selectionRatio};
         return results;
     }
 
@@ -155,22 +156,18 @@ public class Classifier {
          
         for(int i = 0; i < bits; i++)
         {
-            if(sol.get(i).get(0))
+            if(!sol.get(i).get(0))
             {
                 cont++;
+                dellAttributes.add(i);
             }
-            else
-            {
-                dellAttributes.add(i);  
-            }  
-            
         } 
         Object[] indicesObject = dellAttributes.toArray();
         int length = indicesObject.length;
         int[] indicesArray = new int[length];
         for(int n = 0; n < length; n++)
         {
-            indicesArray[n] = (int) indicesObject[n];
+            indicesArray[n] = (int) indicesObject[n] + 1;
         }
         
         return deleteAttributes(dataSetFolds, indicesArray);

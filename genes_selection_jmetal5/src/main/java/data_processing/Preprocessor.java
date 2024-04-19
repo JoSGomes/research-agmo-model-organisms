@@ -47,7 +47,7 @@ public class Preprocessor {
         this.organism = organism; // Caenorhabditis elegans, Drosophila melanogaster, Mus musculus, Saccharomyces cerevisiae
         this.classifier = null;
         this.fold = fold; // Fold atual de execução
-        this.numAtributes = allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst").get(this.fold).get(0).numAttributes() - 1;
+        this.numAtributes = this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(this.fold).get(0).numAttributes() - 1;
         this.ascTerms = this.getOrganismAncestors(false);
         this.descTerms = this.getOrganismAncestors(true);
         this.megerdADTerms = this.mergeADTerms();

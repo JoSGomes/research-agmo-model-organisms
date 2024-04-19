@@ -69,15 +69,16 @@ public class FileHandler {
 
     public static HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> readAllDatasetsFolds(String[] datasets, boolean agmo) throws Exception {
         HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = new HashMap<>();
-        HashMap<String, HashMap<String, List<Instances>>> typeDatasetMap =  new HashMap<>();
-        HashMap<String, List<Instances>> datasetListMap = new HashMap<>();
+
         String typeDataset = "folds";
         if (agmo) {
             typeDataset = "folds-agmo";
         }
         int folds = 10;
         for (ModelOrganism o : ModelOrganism.values()) {
+            HashMap<String, HashMap<String, List<Instances>>> typeDatasetMap =  new HashMap<>();
                 for (String dataset: datasets) {
+                    HashMap<String, List<Instances>> datasetListMap = new HashMap<>();
                     String pathDataTra = "";
                     String pathDataTst = "";
                     List<Instances> listTra = new ArrayList<>();
@@ -109,6 +110,8 @@ public class FileHandler {
                         listTra.add(dataTra);
                         listTst.add(dataTst);
                     }
+
+
 
                     datasetListMap.put("tra", listTra);
                     datasetListMap.put("tst", listTst);
