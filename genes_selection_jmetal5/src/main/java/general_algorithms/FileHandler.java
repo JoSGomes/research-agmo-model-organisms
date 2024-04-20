@@ -380,7 +380,7 @@ public class FileHandler {
             Attribute attribute = data.attribute(i);
             attributes.add(attribute.name());
         }
-
+        attributes.remove(0);
         return attributes;
     }
 

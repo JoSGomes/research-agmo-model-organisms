@@ -5,7 +5,6 @@
  */
 package data_processing;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,34 +19,31 @@ import general_algorithms.FileHandler;
  */
 public class Preprocessor {
     private final int numAtributes;
-    private final int fold;
     private final ModelOrganism organism;   
     private Classifier classifier;
     private final String runningDataset;
     private final String runningClassifier;
-    private HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDataset;
-    private HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasetAGMO;
-    private HashMap<String, List<String>> ascTerms;
-    private HashMap<String, List<String>> descTerms;
-    private HashMap<String, List<String>> megerdADTerms;
-    private List<String> organismAttributes;
+    private final HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDataset;
+    private final HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasetAGMO;
+    private final HashMap<String, List<String>> ascTerms;
+    private final HashMap<String, List<String>> descTerms;
+    private final HashMap<String, List<String>> megerdADTerms;
+    private final List<String> organismAttributes;
     /**
      *
      * @param organism
-     * @param fold
      * @param runningDataSet
      * @param runningClassifier
      * @throws Exception
      */
-    public Preprocessor(ModelOrganism organism, int fold, String runningDataSet, String[] ableDatasets, String runningClassifier) throws Exception {
+    public Preprocessor(ModelOrganism organism, String runningDataSet, String[] ableDatasets, String runningClassifier) throws Exception {
         this.allDataset = FileHandler.readAllDatasetsFolds(ableDatasets, false); // Todos os datasets para avaliar o modelo
         this.allDatasetAGMO = FileHandler.readAllDatasetsFolds(ableDatasets, true); // Todos os datasets para otimização do AGMO
         this.runningClassifier = runningClassifier; //NB, KNN, J48
         this.runningDataset = runningDataSet; //BP, MF, CC, BPMF, BPCC, MFCC, BPMFCC
         this.organism = organism; // Caenorhabditis elegans, Drosophila melanogaster, Mus musculus, Saccharomyces cerevisiae
         this.classifier = null;
-        this.fold = fold; // Fold atual de execução
-        this.numAtributes = this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(this.fold).get(0).numAttributes() - 1;
+        this.numAtributes = this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(0).get(0).numAttributes() - 1;
         this.ascTerms = this.getOrganismAncestors(false);
         this.descTerms = this.getOrganismAncestors(true);
         this.megerdADTerms = this.mergeADTerms();
@@ -135,10 +131,6 @@ public class Preprocessor {
     public int getNumAttributes(){
         return this.numAtributes;
     }
-    
-    public int getFold(){
-        return this.fold;
-    }
 
     public HashMap<String, List<String>> getAscTerms(){
         return this.ascTerms;
@@ -154,5 +146,9 @@ public class Preprocessor {
 
     public HashMap<String, List<String>> getMegerdADTerms(){
         return this.megerdADTerms;
+    }
+
+    public String getRunningDataset(){
+        return this.runningDataset;
     }
 }
