@@ -7,12 +7,9 @@ package general_algorithms;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 
 import data_processing.Preprocessor;
-import java.util.List;
 
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.binarySet.BinarySet;
@@ -31,9 +28,8 @@ import weka.classifiers.bayes.NaiveBayes;
  * @author pbexp
  */
 public class Classifier {
-    private int seed = 1;
-    private int folds = 10;
-    int cont; //contagem dos bits selecionados (ratio reduction)
+    private int folds;
+    int cont; //contagem dos bits não selecionados (selection rate)
     private Preprocessor preProcessor;
     private final String runningClassifier; 
     
@@ -45,6 +41,7 @@ public class Classifier {
      */
     public Classifier(Preprocessor p1, String runningClassifier) throws Exception{
         this.cont = 0;
+        this.folds = 10;
         this.preProcessor = p1;
         this.runningClassifier = runningClassifier;
     }
@@ -55,15 +52,15 @@ public class Classifier {
                 IBk classifier = new IBk(1);
                 JaccardDistance jdDist = new JaccardDistance();
                 classifier.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
-                return calcGMeanRatioReduction(classifier, trainFolds, testFolds);
+                return calcGMeanSelectionRate(classifier, trainFolds, testFolds);
             }
             case "NB" -> {
                 NaiveBayes classifier = new NaiveBayes();
-                return calcGMeanRatioReduction(classifier, trainFolds, testFolds);
+                return calcGMeanSelectionRate(classifier, trainFolds, testFolds);
             }
             case "J48" -> {
                 J48 classifier = new J48();
-                return this.calcGMeanRatioReduction(classifier, trainFolds, testFolds);
+                return this.calcGMeanSelectionRate(classifier, trainFolds, testFolds);
             }
         }       
         return null;
@@ -72,29 +69,29 @@ public class Classifier {
     public double[] classifySolution(BinarySolution bestSolution, List<Instances> trainFolds, List<Instances> testFolds) throws Exception{
         switch(this.runningClassifier){
             case "KNN" -> {
-                IBk classifier = new IBk(1);
+                IBk classifier = new IBk(1); //Rever o valor de k...
                 JaccardDistance jdDist = new JaccardDistance();
                 classifier.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
                 List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
                 List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
-                return calcGMeanRatioReduction(classifier, traData, testData);
+                return calcGMeanSelectionRate(classifier, traData, testData);
             }
             case "NB" -> {
                 NaiveBayes classifier = new NaiveBayes();
                 List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
                 List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
-                return calcGMeanRatioReduction(classifier, traData, testData);
+                return calcGMeanSelectionRate(classifier, traData, testData);
             }
             case "J48" -> {
                 J48 classifier = new J48();
                 List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
                 List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
-                return calcGMeanRatioReduction(classifier, traData, testData);
+                return calcGMeanSelectionRate(classifier, traData, testData);
             }
         }
         return null;
     }
-     
+
     /**Calcula a GMean da Specificity e Sensibility e a Reduction Ratio.
      *
      * @param tra Dataset que o modelo será treinado a fim de
@@ -103,41 +100,46 @@ public class Classifier {
      * de Distância a de Jaccard.
      * @return Retorna a GMean e a Reduction Ratio.
      */
-    private double[] calcGMeanRatioReduction(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
+    private double[] calcGMeanSelectionRate(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg;
         double sensivity, specificity;
-        double selectionRatio;
+        double selectionRate;
         double GMean;
+        double[] GMeans = new double[10];
+
         Random rData = new Random();
         Instances trainSet, testSet;
         Evaluation eval;
-        //Cross-Validation?
-        trainSet = tra.get(0);
-        testSet = test.get(0);
-        
-        trainSet.randomize(rData);
-        testSet.randomize(rData);
-        
-        eval = new Evaluation(trainSet);
-        classifier.buildClassifier(trainSet);
-        eval.evaluateModel(classifier, testSet);
 
-        truePos = eval.numTruePositives(1);
-        trueNeg = eval.numTrueNegatives(1);
-        falsePos = eval.numFalsePositives(1);
-        falseNeg = eval.numFalseNegatives(1);
+        for(int i=0; i < this.folds; i++) {
+            trainSet = tra.get(i);
+            testSet = test.get(i);
 
-        sensivity = truePos / (truePos + falseNeg); 
-        specificity = trueNeg / (trueNeg + falsePos);
+            trainSet.randomize(rData);
+            testSet.randomize(rData);
+
+            eval = new Evaluation(trainSet);
+            classifier.buildClassifier(trainSet);
+            eval.evaluateModel(classifier, testSet);
+
+            truePos = eval.numTruePositives(1);
+            trueNeg = eval.numTrueNegatives(1);
+            falsePos = eval.numFalsePositives(1);
+            falseNeg = eval.numFalseNegatives(1);
+
+            sensivity = truePos / (truePos + falseNeg);
+            specificity = trueNeg / (trueNeg + falsePos);
+
+            GMean = (Math.round((Math.sqrt(sensivity * specificity))*10000.00)/10000.00)*100.00;
+            GMeans[i] = GMean;
+        }
+
         
-        GMean = (Math.round((Math.sqrt(sensivity * specificity))*10000.00)/10000.00)*100.00;
-        
-        selectionRatio =  ( this.preProcessor.getNumAttributes() - cont)
+        selectionRate =  ( this.preProcessor.getNumAttributes() - cont)
                            / (double) this.preProcessor.getNumAttributes();
-        
-        
-        double[] results = {GMean, selectionRatio};
-        return results;
+        OptionalDouble averageGMean = Arrays.stream(GMeans).average();
+
+        return new double[]{averageGMean.getAsDouble(), selectionRate};
     }
 
     /**
@@ -187,56 +189,8 @@ public class Classifier {
         }
         
         return newData;
-    }    
-        
-    /**
-     *
-     * @param newSeed
-     */
-    public void setSeed(int newSeed){
-        seed = newSeed;
     }
     
-    /**
-     *
-     * @return
-     */
-    public int getSeed(){
-        return this.seed;
-    }
-    
-    /**
-     *
-     * @param newFolds
-     */
-    public void setFolds(int newFolds){
-        folds = newFolds;
-    }
-   
-    /**
-     *
-     * @return
-     */
-    public int getFolds(){
-        return this.folds;
-    }
-    
-    /**
-     *
-     * @param newPreprocessor
-     */
-    public void setPreProcessor(Preprocessor newPreprocessor){
-        preProcessor = newPreprocessor;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Preprocessor getPreProcessor(){
-        return this.preProcessor;
-    }
-
     /** Método dedicado ao GridSearch, mais otimizado para que não demore
      * muito tempo na execução, tem o mesmo propósito do classificador 
      * original.
@@ -250,73 +204,14 @@ public class Classifier {
      */
     public double[] classifyKNNGridSearch(BinarySolution s1, List<Instances> tra, List<Instances> test) throws Exception {
         IBk knn = new IBk(1);
-	JaccardDistance jdDist = new JaccardDistance();
+	    JaccardDistance jdDist = new JaccardDistance();
 	
         knn.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
         
         List<Instances> traFold = this.getSelectedDatasetFromSolution(s1, tra);
         List<Instances> testFold = this.getSelectedDatasetFromSolution(s1, test);
         
-	return this.crossValidationGridSearch(knn, traFold, testFold);
-        
+	    return this.calcGMeanSelectionRate(knn, traFold, testFold);
     }
-
-    /**Calcula a GMean da Specificity e Sensibility e a Reduction Ratio.
-     * 
-     * @param tra Dataset que o modelo será treinado a fim de
-     * verificar a solução.
-     * @param classifier Classificador utilizando como configuração de cálculo
-     * de Distância a de Jaccard.
-     * @return Retorna a GMean e a Reduction Ratio.
-     * @throws Exception
-     */
-    private double[] crossValidationGridSearch(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
-        double truePos, trueNeg, falsePos, falseNeg, totalSpe = 0, totalSen = 0;
-        double sensivity; 
-        double specificity;
-        double reductionRatio;
-        double GMean;
-        int foldNumber;
-        Random rData = new Random();
-        
-        Instances traSet, testSet;
-        Evaluation eval;
-        
-        //foldNumber = rData.nextInt(9);
-        for(int n = 0; n < folds; n++)
-        {
-            traSet = tra.get(n);       
-            testSet = test.get(n);
-
-            traSet.randomize(rData);
-            testSet.randomize(rData);
-
-            eval = new Evaluation(traSet);   
-            classifier.buildClassifier(traSet);
-            eval.evaluateModel(classifier, testSet);
-
-            truePos = eval.numTruePositives(1);
-            trueNeg = eval.numTrueNegatives(1);
-            falsePos = eval.numFalsePositives(1);
-            falseNeg = eval.numFalseNegatives(1);
-
-            sensivity = (truePos / (truePos + falseNeg))/Math.pow(10,1); 
-            specificity = (trueNeg / (trueNeg + falsePos))/Math.pow(10,1); 
-            
-            totalSpe += specificity;
-            totalSen += sensivity;
-        }
-        
-        
-        reductionRatio =  ( this.preProcessor.getNumAttributes() - cont) 
-                           / (double) this.preProcessor.getNumAttributes();
-        
-        GMean = (Math.round((Math.sqrt(totalSpe * totalSen))*10000.00)/10000.00)*100.00;
-
-        double[] results = {GMean, reductionRatio};
-        return results;
-    }
-
-    
 
 }  

@@ -24,8 +24,6 @@ import general_algorithms.Classifier;
  */
 public class GAProblem extends AbstractBinaryProblem{
     private final Preprocessor preprocessor;
-    int folds;
-    int seed;
     int numberOfVariables;
     int numberOfObjectives;
     int numberOfConstraints;
@@ -70,18 +68,18 @@ public class GAProblem extends AbstractBinaryProblem{
         /* Solution: suposta intância que pertence a população criada
         aleatoriamente que deve ser classificada. */
         double[] f = new double[this.numberOfObjectives];
-        double[] GMeanAndReductionRatio;
+        double[] GMeanAndSelectionRatio;
         try {
             
-            GMeanAndReductionRatio = evalF(preprocessor, solution);
-            f[0] = GMeanAndReductionRatio[0];
-            f[1] = GMeanAndReductionRatio[1];
+            GMeanAndSelectionRatio = evalF(preprocessor, solution);
+            f[0] = GMeanAndSelectionRatio[0];
+            f[1] = GMeanAndSelectionRatio[1];
             
         } catch (Exception ex) {
             Logger.getLogger(GAProblem.class.getName()).log(Level.SEVERE, null, ex);
         }
         solution.objectives()[0] = f[0] * (-1);
-        solution.objectives()[1] = f[1] * (-1);
+        solution.objectives()[1] = f[1];
         
         return solution;
     }
