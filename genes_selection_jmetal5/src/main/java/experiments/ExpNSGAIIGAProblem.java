@@ -60,52 +60,50 @@ public class ExpNSGAIIGAProblem {
                     Map<Integer, Future<Object>> results = new HashMap<>();
                     ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
                     int indexThread = 1;
-                    for(int k = 0; k < 3; k++){
-                        //Parâmetros do NSGAII
-                        switch (organism.originalDataset)
-                        {
-                            case "Drosophila melanogaster", "Saccharomyces cerevisiae" -> {
-                                probabilityMutationSelectInstances = 0.2;
-                                probabilityCrossoverSelectInstances = 0.5;
-                            }
-                            case "Mus musculus", "Caenorhabditis elegans" -> {
-                                probabilityMutationSelectInstances = 0.2;
-                                probabilityCrossoverSelectInstances = 0.9;
-                            }
+                    //Parâmetros do NSGAII
+                    switch (organism.originalDataset)
+                    {
+                        case "Drosophila melanogaster", "Saccharomyces cerevisiae" -> {
+                            probabilityMutationSelectInstances = 0.2;
+                            probabilityCrossoverSelectInstances = 0.5;
                         }
-                        try
-                        {
-                            System.out.print("\n##########################################\n");
-                            System.out.println("Reading all the data...");
-
-                            preprocessor = new Preprocessor(organism, runningDataSet, dataSets, runningClassifier);
-
-                            System.out.println("The read have been complete and the data are into memory!");
-                            System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet);
-
-                            Callable<Object> experiment = new NSGAIIAlgorithm(
-                                    preprocessor,
-                                    populationSize,
-                                    maxEvaluation,
-                                    probabilityCrossoverSelectInstances,
-                                    probabilityMutationSelectInstances,
-                                    indexThread
-                            );
-
-                            Future<Object> submit = executor.submit(experiment);
-                            results.put(indexThread, submit);
-                            indexThread++;
-
-                        }catch (Exception ex){
-                            Logger.getLogger(NSGAIIAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
+                        case "Mus musculus", "Caenorhabditis elegans" -> {
+                            probabilityMutationSelectInstances = 0.2;
+                            probabilityCrossoverSelectInstances = 0.9;
                         }
                     }
+                    try
+                    {
+                        System.out.print("\n##########################################\n");
+                        System.out.println("Reading all the data...");
 
-                    //laço dedicado a espera da execução da thread.
-                    for (int key : results.keySet()){
-                        Future<Object> future = results.get(key);
-                        Object aux = future.get();
+                        preprocessor = new Preprocessor(organism, runningDataSet, dataSets, runningClassifier);
+
+                        System.out.println("The read have been complete and the data are into memory!");
+                        System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet);
+
+                        Callable<Object> experiment = new NSGAIIAlgorithm(
+                                preprocessor,
+                                populationSize,
+                                maxEvaluation,
+                                probabilityCrossoverSelectInstances,
+                                probabilityMutationSelectInstances,
+                                indexThread
+                        );
+
+                        Future<Object> submit = executor.submit(experiment);
+                        results.put(indexThread, submit);
+                        indexThread++;
+
+                    }catch (Exception ex){
+                        Logger.getLogger(NSGAIIAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
                     }
+
+                //laço dedicado a espera da execução da thread.
+                for (int key : results.keySet()){
+                    Future<Object> future = results.get(key);
+                    Object aux = future.get();
+                }
 
                     //Testar para a melhor solução gerada
                     int bestSolutionCounter = 0;
@@ -131,17 +129,16 @@ public class ExpNSGAIIGAProblem {
                     solAndPopulation = (ArrayList) results.get(bestSolutionCounter).get();
                     List<BinarySolution> population = (List<BinarySolution>) solAndPopulation.get(1); //Para o VAR e FUN
 
-                    double[] resultsClassify = preprocessor.getClassifier().classifySolution( (BinarySolution) solAndPopulation.get(0), trainFold, testFold);
+                    double[] resultsClassify = preprocessor.getClassifier().classifySolution( (BinarySolution) solAndPopulation.get(0), trainFold, testFold, true);
                     SolutionListOutput solListOutput = new SolutionListOutput(population);
                     solListOutput
-                                .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + "VAR-" + preprocessor.getOrganism().originalDataset + "\\fold-" + preprocessor.getFold() + ".csv", ","))
-                                .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + "FUN-" + preprocessor.getOrganism().originalDataset + "\\fold-" + preprocessor.getFold() + ".csv", ","))
+                                .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
+                                .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
                                 .print();
                     String output = "results\\" + runningDataSet + runningClassifier + "\\results.csv";
-                    FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, preprocessor.getFold(), bestGMean);
+                    FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean);
 
                     executor.shutdown();
-
                 }
             }
         }
@@ -149,7 +146,7 @@ public class ExpNSGAIIGAProblem {
             
     }
     
-    // Calculates a adequate number of threads to process in parallel
+    // Calculates an adequate number of threads to process in parallel
     private static int calculateNumThreads(int numFolds) {
         int cores = Runtime.getRuntime().availableProcessors();
         

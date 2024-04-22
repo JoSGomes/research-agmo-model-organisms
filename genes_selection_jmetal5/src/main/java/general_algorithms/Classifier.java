@@ -46,48 +46,42 @@ public class Classifier {
         this.runningClassifier = runningClassifier;
     }
     
-    public double[] classifyResult(ArrayList<Instances> trainFolds, ArrayList<Instances> testFolds) throws Exception{      
+    public double[] classifyResult(ArrayList<Instances> trainFolds, ArrayList<Instances> testFolds, boolean bestSolution) throws Exception{
         switch(this.runningClassifier){
             case "KNN" -> {
                 IBk classifier = new IBk(1);
                 JaccardDistance jdDist = new JaccardDistance();
                 classifier.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
-                return calcGMeanSelectionRate(classifier, trainFolds, testFolds);
+                return calcGMeanSelectionRate(classifier, trainFolds, testFolds, bestSolution);
             }
             case "NB" -> {
                 NaiveBayes classifier = new NaiveBayes();
-                return calcGMeanSelectionRate(classifier, trainFolds, testFolds);
+                return calcGMeanSelectionRate(classifier, trainFolds, testFolds, bestSolution);
             }
             case "J48" -> {
                 J48 classifier = new J48();
-                return this.calcGMeanSelectionRate(classifier, trainFolds, testFolds);
+                return this.calcGMeanSelectionRate(classifier, trainFolds, testFolds, bestSolution);
             }
         }       
         return null;
     }
     
-    public double[] classifySolution(BinarySolution bestSolution, List<Instances> trainFolds, List<Instances> testFolds) throws Exception{
+    public double[] classifySolution(BinarySolution bestSolution, List<Instances> trainFolds, List<Instances> testFolds, boolean bestSolutionFlag) throws Exception{
+        AbstractClassifier classifier = null;
         switch(this.runningClassifier){
             case "KNN" -> {
-                IBk classifier = new IBk(1); //Rever o valor de k...
+                classifier = new IBk(1); //Rever o valor de k...
                 JaccardDistance jdDist = new JaccardDistance();
-                classifier.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
-                List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
-                List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
-                return calcGMeanSelectionRate(classifier, traData, testData);
+                ((IBk) classifier).getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
             }
-            case "NB" -> {
-                NaiveBayes classifier = new NaiveBayes();
-                List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
-                List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
-                return calcGMeanSelectionRate(classifier, traData, testData);
-            }
-            case "J48" -> {
-                J48 classifier = new J48();
-                List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
-                List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
-                return calcGMeanSelectionRate(classifier, traData, testData);
-            }
+            case "NB" -> classifier = new NaiveBayes();
+            case "J48" -> classifier = new J48();
+
+        }
+        if (classifier != null){
+            List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
+            List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
+            return calcGMeanSelectionRate(classifier, traData, testData, bestSolutionFlag);
         }
         return null;
     }
@@ -100,7 +94,7 @@ public class Classifier {
      * de Distância a de Jaccard.
      * @return Retorna a GMean e a Reduction Ratio.
      */
-    private double[] calcGMeanSelectionRate(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
+    private double[] calcGMeanSelectionRate(AbstractClassifier classifier, List<Instances> tra, List<Instances> test, boolean bestSolution) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg;
         double sensivity, specificity;
         double selectionRate;
@@ -139,6 +133,14 @@ public class Classifier {
                            / (double) this.preProcessor.getNumAttributes();
         OptionalDouble averageGMean = Arrays.stream(GMeans).average();
 
+        if (bestSolution) {
+            double[] results = new double[11];
+            for (int i = 0; i < 10; i++) {
+                results[i] = GMeans[i];
+            }
+            results[10] = selectionRate;
+            return results;
+        }
         return new double[]{averageGMean.getAsDouble(), selectionRate};
     }
 
@@ -202,7 +204,7 @@ public class Classifier {
      * e na Segunda a Reduction Ratio.
      * @throws Exception
      */
-    public double[] classifyKNNGridSearch(BinarySolution s1, List<Instances> tra, List<Instances> test) throws Exception {
+    public double[] classifyKNNGridSearch(BinarySolution s1, List<Instances> tra, List<Instances> test, boolean bestSolutionFlag) throws Exception {
         IBk knn = new IBk(1);
 	    JaccardDistance jdDist = new JaccardDistance();
 	
@@ -211,7 +213,7 @@ public class Classifier {
         List<Instances> traFold = this.getSelectedDatasetFromSolution(s1, tra);
         List<Instances> testFold = this.getSelectedDatasetFromSolution(s1, test);
         
-	    return this.calcGMeanSelectionRate(knn, traFold, testFold);
+	    return this.calcGMeanSelectionRate(knn, traFold, testFold, bestSolutionFlag);
     }
 
 }  

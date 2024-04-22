@@ -326,23 +326,22 @@ public class FileHandler {
      * @param fold
      * @param bestGMean
      */
-    public static void saveResults(String output, int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, int fold, double bestGMean){
+    public static void saveResults(String output, int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean){
         if(resultsCSV.isEmpty()){
-            String[] headers = new String[]{"organism", "populationSize","mutationProbability", "crossoverProbability", "Fold", "GMean" , "Best GMean AGMO", "ratioReduction"};
+            String[] headers = new String[]{"organism", "populationSize","mutationProbability", "crossoverProbability", "runningDataset", "fold", "GMean" , "Best GMean AGMO", "selectionRate"};
             resultsCSV.add(headers);
         }
 
         String mutation = Double.toString(mutationA);
         String crossover = Double.toString(crossoverA);
         String populationSize = Integer.toString(populationSizeA);
+        String selectionRate = Double.toString(results[10]);
+        String[] aux;
 
-        double GMean = results[0];
-        double ratioReduction = results[1];
-        GMean = GMean * (-1);
-        ratioReduction = ratioReduction * (-1);
-
-        String[] aux = {organism, populationSize, mutation, crossover, Integer.toString(fold), Double.toString(GMean), Double.toString(bestGMean), Double.toString(ratioReduction)};
-        resultsCSV.add(aux);
+        for (int i = 0; i < 10; i++) {
+            aux = new String[]{organism, populationSize, mutation, crossover, runningDataset, Integer.toString(i), Double.toString(results[i]), Double.toString(bestGMean), selectionRate};
+            resultsCSV.add(aux);
+        }
         writeResults(output);
     }
 
@@ -363,7 +362,7 @@ public class FileHandler {
 
     public static void saveResults(String output, double[] results, String organism, int fold){
         if(resultsCSV.isEmpty()){
-            String[] headers = new String[]{"organism", "populationSize","mutationProbability", "crossoverProbability", "Fold", "GMean" , "Best GMean AGMO", "ratioReduction"};
+            String[] headers = new String[]{"organism", "populationSize","mutationProbability", "crossoverProbability", "Fold", "GMean" , "Best GMean AGMO", "selectionRate"};
             resultsCSV.add(headers);
         }
 

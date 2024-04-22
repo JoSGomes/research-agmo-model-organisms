@@ -124,7 +124,7 @@ public class NSGAIIAlgorithm implements Callable {
             double bestGMean = 0, bestRatioR = 0, auxGMean, auxRatioR;
             for(int i = 0; i < population.size(); i++){
                 auxGMean = population.get(i).objectives()[0]*(-1);
-                auxRatioR = population.get(i).objectives()[1]*(-1);
+                auxRatioR = population.get(i).objectives()[1];
                 if(auxGMean > bestGMean || (auxGMean == bestGMean && auxRatioR > bestRatioR)){
                     bestSolutionCounter = i;
                     bestGMean = auxGMean;
