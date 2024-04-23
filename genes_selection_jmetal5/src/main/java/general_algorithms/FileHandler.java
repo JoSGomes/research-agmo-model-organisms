@@ -323,7 +323,6 @@ public class FileHandler {
      * @param crossoverA
      * @param results
      * @param organism
-     * @param fold
      * @param bestGMean
      */
     public static void saveResults(String output, int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean){
