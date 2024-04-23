@@ -67,13 +67,10 @@ public class FileHandler {
         }
     }
 
-    public static HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> readAllDatasetsFolds(String[] datasets, boolean agmo) throws Exception {
+    public static HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> readAllDatasetsFolds(String[] datasets) throws Exception {
         HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = new HashMap<>();
 
         String typeDataset = "folds";
-        if (agmo) {
-            typeDataset = "folds-agmo";
-        }
         int folds = 10;
         for (ModelOrganism o : ModelOrganism.values()) {
             HashMap<String, HashMap<String, List<Instances>>> typeDatasetMap =  new HashMap<>();
@@ -81,15 +78,20 @@ public class FileHandler {
                     HashMap<String, List<Instances>> datasetListMap = new HashMap<>();
                     String pathDataTra = "";
                     String pathDataTst = "";
+                    String pathDataVal = "";
                     List<Instances> listTra = new ArrayList<>();
+                    List<Instances> listVal = new ArrayList<>();
                     List<Instances> listTst = new ArrayList<>();
                     for (int n = 0; n < folds; n++){
-
-
                         pathDataTra = PathOfDataset.root.path +
                                         o.originalDataset + "\\" +
                                 typeDataset + "\\" + dataset + "\\" + o.name().toLowerCase() +
                                         "-" + dataset + "_fold_" + n + "_tra" + FileExtension.arff.extension;
+
+                        pathDataVal = PathOfDataset.root.path +
+                                o.originalDataset + "\\" +
+                                typeDataset + "\\" + dataset + "\\" +o.name().toLowerCase() +
+                                "-" + dataset + "_fold_" + n + "_val" + FileExtension.arff.extension;
 
                         pathDataTst = PathOfDataset.root.path +
                                 o.originalDataset + "\\" +
@@ -97,23 +99,30 @@ public class FileHandler {
                                 "-" + dataset + "_fold_" + n + "_tst" + FileExtension.arff.extension;
 
                         DataSource sourceTra = new DataSource(pathDataTra);
+                        DataSource sourceVal = new DataSource(pathDataVal);
                         DataSource sourceTst = new DataSource(pathDataTst);
                         Instances dataTra = sourceTra.getDataSet();
+                        Instances dataVal = sourceVal.getDataSet();
                         Instances dataTst = sourceTst.getDataSet();
 
                         if(dataTra.classIndex() == -1 ){
                             dataTra.setClassIndex(0);
                         }
+                        if(dataVal.classIndex() == -1 ){
+                            dataVal.setClassIndex(0);
+                        }
                         if(dataTst.classIndex() == -1 ){
                             dataTst.setClassIndex(0);
                         }
                         listTra.add(dataTra);
+                        listVal.add(dataVal);
                         listTst.add(dataTst);
                     }
 
 
 
                     datasetListMap.put("tra", listTra);
+                    datasetListMap.put("val", listVal);
                     datasetListMap.put("tst", listTst);
                     typeDatasetMap.put(dataset, datasetListMap);
 

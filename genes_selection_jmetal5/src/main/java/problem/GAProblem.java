@@ -87,9 +87,9 @@ public class GAProblem extends AbstractBinaryProblem{
         Classifier classifier = preprocessor.getClassifier();
 
         List<Instances> tra = preprocessor.getTRAFoldAGMO();
-        List<Instances> tst = preprocessor.getTESTFoldAGMO();
+        List<Instances> val = preprocessor.getVALFoldAGMO();
 
-        return classifier.classifySolution(s1, tra, tst, false);
+        return classifier.classifySolution(s1, tra, val, false);
     }
 
     @Override

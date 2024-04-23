@@ -24,11 +24,11 @@ public class Preprocessor {
     private final String runningDataset;
     private final String runningClassifier;
     private final HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDataset;
-    private final HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasetAGMO;
     private final HashMap<String, List<String>> ascTerms;
     private final HashMap<String, List<String>> descTerms;
     private final HashMap<String, List<String>> megerdADTerms;
     private final List<String> organismAttributes;
+    private final int fold;
     /**
      *
      * @param organism
@@ -36,34 +36,39 @@ public class Preprocessor {
      * @param runningClassifier
      * @throws Exception
      */
-    public Preprocessor(ModelOrganism organism, String runningDataSet, String[] ableDatasets, String runningClassifier) throws Exception {
-        this.allDataset = FileHandler.readAllDatasetsFolds(ableDatasets, false); // Todos os datasets para avaliar o modelo
-        this.allDatasetAGMO = FileHandler.readAllDatasetsFolds(ableDatasets, true); // Todos os datasets para otimização do AGMO
+    public Preprocessor(ModelOrganism organism, String runningDataSet, String[] ableDatasets, String runningClassifier, int fold) throws Exception {
+        this.allDataset = FileHandler.readAllDatasetsFolds(ableDatasets); // Todos os datasets
         this.runningClassifier = runningClassifier; //NB, KNN, J48
         this.runningDataset = runningDataSet; //BP, MF, CC, BPMF, BPCC, MFCC, BPMFCC
         this.organism = organism; // Caenorhabditis elegans, Drosophila melanogaster, Mus musculus, Saccharomyces cerevisiae
         this.classifier = null;
-        this.numAtributes = this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(0).get(0).numAttributes() - 1;
         this.ascTerms = this.getOrganismAncestors(false);
         this.descTerms = this.getOrganismAncestors(true);
         this.megerdADTerms = this.mergeADTerms();
         this.organismAttributes = this.getOrganismAttributesFromInstance();
+        this.fold = fold;
+        this.numAtributes = this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(this.fold).get(0).numAttributes() - 1;
+
     }
     
     public List<Instances> getTRAFoldAGMO() {
-        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
+        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
+    }
+
+    public List<Instances> getVALFoldAGMO() {
+        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("val");
     }
     
     public List<Instances> getTESTFoldAGMO() throws Exception{
-        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
+        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
     }
     
     public List<Instances> getFoldTRAGridSearch() throws Exception{
-        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
+        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
     }
     
     public List<Instances> getFoldTESTGridSearch() throws Exception{
-        return this.allDatasetAGMO.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
+        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
     }
     
     /** Retorna todos os folds de treino.
@@ -118,7 +123,7 @@ public class Preprocessor {
      */
     public Classifier getClassifier() throws Exception {
        if(classifier == null){
-           classifier = new Classifier(this, this.runningClassifier);
+           classifier = new Classifier(this, this.runningClassifier, this.fold);
        }
        return this.classifier;
     }
@@ -150,5 +155,9 @@ public class Preprocessor {
 
     public String getRunningDataset(){
         return this.runningDataset;
+    }
+
+    public int getFold(){
+        return this.fold;
     }
 }

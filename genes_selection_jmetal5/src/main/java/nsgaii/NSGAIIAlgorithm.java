@@ -112,7 +112,7 @@ public class NSGAIIAlgorithm implements Callable {
             estimatedTime = System.currentTimeMillis() - initTime;
             timeSelectInstances = ((estimatedTime/1000) / 60.0) / 60.0;
 
-            System.out.println("Finishing to " + this.preprocessor.getOrganism().originalDataset + " // " + this.preprocessor.getRunningDataset());
+            System.out.println("Finishing to " + this.preprocessor.getOrganism().originalDataset + " // " + this.preprocessor.getRunningDataset() + " // FOLD - " + preprocessor.getFold());
             System.out.println("Propriedades do NSGA-II:\n" +
                     "Probabilidade de Cruzamento: " + probabilityCrossoverSelectInstances + "\n" +
                     "Probabilidade de Mutação: " + probabilityMutationSelectInstances + "\n" +

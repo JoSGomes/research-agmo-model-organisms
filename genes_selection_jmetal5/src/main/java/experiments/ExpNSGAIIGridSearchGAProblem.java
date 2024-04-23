@@ -1,46 +1,35 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package experiments;
-
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import data_processing.ModelOrganism;
 import data_processing.Preprocessor;
 import general_algorithms.FileHandler;
-import java.util.ArrayList;
-import java.util.List;
 import nsgaii.NSGAIIAlgorithm;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import weka.core.Instances;
 
-/**
- *
- * @author pbexp
- */
-public class ExpNSGAIIGAProblem {
-    
-    public static void main(String[] args) throws InterruptedException, ExecutionException, Exception, Exception {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ExpNSGAIIGridSearchGAProblem {
+
+    public static void main(String[] args) throws Exception {
         int populationSize = 100;
         int maxEvaluation = 20000;
 
         //Execução paralela
         int numberOfFolds = 10;
-        int numberOfThreads;  
-        
+        int numberOfThreads;
+
         //Controle dos datasets
         Preprocessor preprocessor = null;
         numberOfThreads = calculateNumThreads(numberOfFolds);
@@ -132,9 +121,9 @@ public class ExpNSGAIIGAProblem {
                     double[] resultsClassify = preprocessor.getClassifier().classifySolution( (BinarySolution) solAndPopulation.get(0), trainFold, testFold, true);
                     SolutionListOutput solListOutput = new SolutionListOutput(population);
                     solListOutput
-                                .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
-                                .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
-                                .print();
+                            .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
+                            .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
+                            .print();
                     String output = "results\\" + runningDataSet + runningClassifier + "\\results.csv";
                     FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean);
 
@@ -143,18 +132,18 @@ public class ExpNSGAIIGAProblem {
             }
         }
     }
-    
+
     // Calculates an adequate number of threads to process in parallel
     private static int calculateNumThreads(int numFolds) {
         int cores = Runtime.getRuntime().availableProcessors();
-        
-        int threads;       
+
+        int threads;
         if (numFolds <= cores) { // process all folds at the same time
             threads = numFolds;
-        } 
+        }
         else if (cores > numFolds / 2.0) { // balance the load in 2 batchs
             threads = (int) Math.ceil(numFolds / 2.0);
-        } 
+        }
         else { // use all cores to process
             threads = cores;
         }

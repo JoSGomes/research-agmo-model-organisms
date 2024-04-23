@@ -28,7 +28,7 @@ import weka.classifiers.bayes.NaiveBayes;
  * @author pbexp
  */
 public class Classifier {
-    private int folds;
+    private int fold;
     int cont; //contagem dos bits não selecionados (selection rate)
     private Preprocessor preProcessor;
     private final String runningClassifier; 
@@ -39,9 +39,9 @@ public class Classifier {
      * @param runningClassifier
      * @throws Exception
      */
-    public Classifier(Preprocessor p1, String runningClassifier) throws Exception{
+    public Classifier(Preprocessor p1, String runningClassifier, int fold) throws Exception{
         this.cont = 0;
-        this.folds = 10;
+        this.fold = fold;
         this.preProcessor = p1;
         this.runningClassifier = runningClassifier;
     }
@@ -99,49 +99,35 @@ public class Classifier {
         double sensivity, specificity;
         double selectionRate;
         double GMean;
-        double[] GMeans = new double[10];
 
         Random rData = new Random();
         Instances trainSet, testSet;
         Evaluation eval;
 
-        for(int i=0; i < this.folds; i++) {
-            trainSet = tra.get(i);
-            testSet = test.get(i);
+        trainSet = tra.get(this.fold);
+        testSet = test.get(this.fold);
 
-            trainSet.randomize(rData);
-            testSet.randomize(rData);
+        trainSet.randomize(rData);
+        testSet.randomize(rData);
 
-            eval = new Evaluation(trainSet);
-            classifier.buildClassifier(trainSet);
-            eval.evaluateModel(classifier, testSet);
+        eval = new Evaluation(trainSet);
+        classifier.buildClassifier(trainSet);
+        eval.evaluateModel(classifier, testSet);
 
-            truePos = eval.numTruePositives(1);
-            trueNeg = eval.numTrueNegatives(1);
-            falsePos = eval.numFalsePositives(1);
-            falseNeg = eval.numFalseNegatives(1);
+        truePos = eval.numTruePositives(1);
+        trueNeg = eval.numTrueNegatives(1);
+        falsePos = eval.numFalsePositives(1);
+        falseNeg = eval.numFalseNegatives(1);
 
-            sensivity = truePos / (truePos + falseNeg);
-            specificity = trueNeg / (trueNeg + falsePos);
+        sensivity = truePos / (truePos + falseNeg);
+        specificity = trueNeg / (trueNeg + falsePos);
 
-            GMean = (Math.round((Math.sqrt(sensivity * specificity))*10000.00)/10000.00)*100.00;
-            GMeans[i] = GMean;
-        }
-
+        GMean = (Math.round((Math.sqrt(sensivity * specificity))*10000.00)/10000.00)*100.00;
         
         selectionRate =  ( this.preProcessor.getNumAttributes() - cont)
                            / (double) this.preProcessor.getNumAttributes();
-        OptionalDouble averageGMean = Arrays.stream(GMeans).average();
 
-        if (bestSolution) {
-            double[] results = new double[11];
-            for (int i = 0; i < 10; i++) {
-                results[i] = GMeans[i];
-            }
-            results[10] = selectionRate;
-            return results;
-        }
-        return new double[]{averageGMean.getAsDouble(), selectionRate};
+        return new double[]{GMean, selectionRate};
     }
 
     /**
