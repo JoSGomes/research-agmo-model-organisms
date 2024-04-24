@@ -29,6 +29,7 @@ public class Preprocessor {
     private final HashMap<String, List<String>> megerdADTerms;
     private final List<String> organismAttributes;
     private final int fold;
+    private final int kValue;
     /**
      *
      * @param organism
@@ -36,7 +37,7 @@ public class Preprocessor {
      * @param runningClassifier
      * @throws Exception
      */
-    public Preprocessor(ModelOrganism organism, String runningDataSet, String[] ableDatasets, String runningClassifier, int fold) throws Exception {
+    public Preprocessor(ModelOrganism organism, String runningDataSet, String[] ableDatasets, String runningClassifier, int fold, int kValue) throws Exception {
         this.allDataset = FileHandler.readAllDatasetsFolds(ableDatasets); // Todos os datasets
         this.runningClassifier = runningClassifier; //NB, KNN, J48
         this.runningDataset = runningDataSet; //BP, MF, CC, BPMF, BPCC, MFCC, BPMFCC
@@ -48,7 +49,7 @@ public class Preprocessor {
         this.organismAttributes = this.getOrganismAttributesFromInstance();
         this.fold = fold;
         this.numAtributes = this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(this.fold).get(0).numAttributes() - 1;
-
+        this.kValue = kValue;
     }
     
     public List<Instances> getTRAFoldAGMO() {
@@ -159,5 +160,9 @@ public class Preprocessor {
 
     public int getFold(){
         return this.fold;
+    }
+
+    public int getKValue(){
+        return this.kValue;
     }
 }

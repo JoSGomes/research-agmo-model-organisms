@@ -37,13 +37,10 @@ public class ExpNSGAIIGAProblem {
         int populationSize = 100;
         int maxEvaluation = 20000;
 
-        //Execução paralela
-        int numberOfFolds = 10;
-        int numberOfThreads;  
-        
         //Controle dos datasets
+        int numberOfFolds = 10;
+        int numberOfThreads = calculateNumThreads(numberOfFolds);;
         Preprocessor preprocessor = null;
-        numberOfThreads = calculateNumThreads(numberOfFolds);
         String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
         String[] classifier = {"KNN", "NB", "J48"};
 
@@ -76,7 +73,7 @@ public class ExpNSGAIIGAProblem {
                             System.out.print("\n##########################################\n");
                             System.out.println("Reading all the data...");
 
-                            preprocessor = new Preprocessor(organism, runningDataSet, dataSets, runningClassifier, fold);
+                            preprocessor = new Preprocessor(organism, runningDataSet, dataSets, runningClassifier, fold, 1);
 
                             System.out.println("The read have been complete and the data are into memory!");
                             System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet+ " // FOLD - " + fold);
@@ -136,7 +133,7 @@ public class ExpNSGAIIGAProblem {
                                 .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
                                 .print();
                     String output = "results\\" + runningDataSet + runningClassifier + "\\results.csv";
-                    FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean);
+                    FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
 
                     executor.shutdown();
                 }

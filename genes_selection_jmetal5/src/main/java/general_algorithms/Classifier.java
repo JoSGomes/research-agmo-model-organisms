@@ -49,7 +49,7 @@ public class Classifier {
     public double[] classifyResult(ArrayList<Instances> trainFolds, ArrayList<Instances> testFolds, boolean bestSolution) throws Exception{
         switch(this.runningClassifier){
             case "KNN" -> {
-                IBk classifier = new IBk(1);
+                IBk classifier = new IBk(this.preProcessor.getKValue());
                 JaccardDistance jdDist = new JaccardDistance();
                 classifier.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
                 return calcGMeanSelectionRate(classifier, trainFolds, testFolds, bestSolution);

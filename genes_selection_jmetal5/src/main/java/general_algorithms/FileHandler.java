@@ -334,22 +334,31 @@ public class FileHandler {
      * @param organism
      * @param bestGMean
      */
-    public static void saveResults(String output, int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean){
-        if(resultsCSV.isEmpty()){
-            String[] headers = new String[]{"organism", "populationSize","mutationProbability", "crossoverProbability", "runningDataset", "fold", "GMean" , "Best GMean AGMO", "selectionRate"};
-            resultsCSV.add(headers);
-        }
-
+    public static void saveResults(String output, int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean, int fold, int kValue, boolean gridSearch){
         String mutation = Double.toString(mutationA);
         String crossover = Double.toString(crossoverA);
         String populationSize = Integer.toString(populationSizeA);
-        String selectionRate = Double.toString(results[10]);
-        String[] aux;
+        String GMean = Double.toString(results[0]);
+        String selectionRate = Double.toString(results[1]);
+        String[] aux = null;
+        
+        if(resultsCSV.isEmpty()){
+            String[] headers;
+            if (!gridSearch) {
+                headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
+                aux = new String[]{organism, populationSize, mutation, crossover, runningDataset, Integer.toString(fold), GMean, selectionRate, Double.toString(bestGMean)};
 
-        for (int i = 0; i < 10; i++) {
-            aux = new String[]{organism, populationSize, mutation, crossover, runningDataset, Integer.toString(i), Double.toString(results[i]), Double.toString(bestGMean), selectionRate};
-            resultsCSV.add(aux);
+            }
+            else {
+                headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "kValue", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
+                aux = new String[]{organism, populationSize, mutation, crossover, String.valueOf(kValue), runningDataset, Integer.toString(fold), GMean, selectionRate, Double.toString(bestGMean)};
+
+            }
+            resultsCSV.add(headers);
         }
+
+
+        resultsCSV.add(aux);
         writeResults(output);
     }
 
