@@ -48,7 +48,7 @@ public class Preprocessor {
         this.megerdADTerms = this.mergeADTerms();
         this.organismAttributes = this.getOrganismAttributesFromInstance();
         this.fold = fold;
-        this.numAtributes = this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra").get(this.fold).get(0).numAttributes() - 1;
+        this.numAtributes = this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("val").get(this.fold).get(0).numAttributes() - 1;
         this.kValue = kValue;
     }
     

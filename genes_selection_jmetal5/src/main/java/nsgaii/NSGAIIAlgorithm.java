@@ -25,6 +25,7 @@ import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.operator.crossover.impl.HUXCrossover;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -49,7 +50,7 @@ public class NSGAIIAlgorithm implements Callable {
     private HashMap<String, List<String>> ADTerms;
 
     private List<String> organismAttributes;
-    private List<Instances> dataSet;
+    private Instances dataSet;
     int indexThread;
     
     /**
@@ -70,7 +71,7 @@ public class NSGAIIAlgorithm implements Callable {
         this.probabilityCrossoverSelectInstances = probabilityCrossoverSelectInstances;
         this.probabilityMutationSelectInstances = probabilityMutationSelectInstances;
         this.organismAttributes = this.preprocessor.getOrganismAttributes();
-        this.dataSet = this.preprocessor.getTRAFoldAGMO();
+        this.dataSet = this.preprocessor.getVALFoldAGMO().get(this.preprocessor.getFold());
         this.ADTerms = this.preprocessor.getMegerdADTerms();
         this.indexThread = indexThread;
     }
