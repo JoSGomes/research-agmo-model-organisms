@@ -25,7 +25,6 @@ import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.operator.mutation.impl.BitFlipMutation;
 import org.uma.jmetal.operator.crossover.impl.HUXCrossover;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
-import weka.core.Instance;
 import weka.core.Instances;
 
 /**

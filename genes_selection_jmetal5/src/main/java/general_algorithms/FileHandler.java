@@ -5,8 +5,6 @@
  */
 package general_algorithms;
 
-//import com.opencsv.CSVWriter;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

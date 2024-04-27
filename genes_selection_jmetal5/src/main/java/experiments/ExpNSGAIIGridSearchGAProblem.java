@@ -5,8 +5,6 @@ import data_processing.Preprocessor;
 import general_algorithms.FileHandler;
 import nsgaii.NSGAIIAlgorithm;
 import org.uma.jmetal.solution.binarysolution.BinarySolution;
-import org.uma.jmetal.util.fileoutput.SolutionListOutput;
-import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import weka.core.Instances;
 
 import java.util.ArrayList;
