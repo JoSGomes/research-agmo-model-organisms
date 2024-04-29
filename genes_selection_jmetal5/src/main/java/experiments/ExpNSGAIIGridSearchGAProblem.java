@@ -21,32 +21,42 @@ import java.util.logging.Logger;
 public class ExpNSGAIIGridSearchGAProblem {
 
     public static void main(String[] args) throws Exception {
-        int maxEvaluation = 20000;
+        int maxEvaluation;
 
         // Grid
         float[] mutationSearch = {0.2F, 0.4F, 0.6F};
         float[] crossoverSearch = {0.5F, 0.7F, 0.9F};
         int[] populationSearch = {100, 150, 200};
-        int[] kValueSearch = {1, 5, 10};
+        int[] kValueSearch = {1, 5, 9};
 
         // Controle dos datasets
         int numberOfFolds = 10;
         int numberOfThreads = calculateNumThreads(numberOfFolds);;
         Preprocessor preprocessor = null;
-        String[] dataSets = {"BPMFCC"}; // GridSearch para apenas um tipo de dataset
+        String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"}; // GridSearch para apenas um tipo de dataset
         String[] classifier = {"KNN"}; // GridSearch somente para o KNN
 
 
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
         System.out.println("Using " + numberOfThreads + " threads for parallel execution.");
-        for (int kValue : kValueSearch) {
-            for (float probabilityMutationSelectInstances : mutationSearch){
-                for (float probabilityCrossoverSelectInstances : crossoverSearch){
-                    for (int populationSize: populationSearch){
-                        for(String runningDataSet : dataSets){
-                            for(String runningClassifier : classifier){
-                                Map<Integer, Future<Object>> results = new HashMap<>();
-                                for(ModelOrganism organism : ModelOrganism.values()){ // GridSearch para todos os organismos
+
+        for (float probabilityMutationSelectInstances : mutationSearch){
+            for (float probabilityCrossoverSelectInstances : crossoverSearch){
+                for (int populationSize: populationSearch){
+                    if (populationSize == 100) {
+                        maxEvaluation = 20000;
+                    }
+                    else if (populationSize == 150){
+                        maxEvaluation = 30000;
+                    }
+                    else {
+                        maxEvaluation = 40000;
+                    }
+                    for(String runningClassifier : classifier){
+                        for (int kValue : kValueSearch){
+                            Map<Integer, Future<Object>> results = new HashMap<>();
+                            for(ModelOrganism organism : ModelOrganism.values()){ // GridSearch para todos os organismos
+                                for(String runningDataSet : dataSets){
                                     ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
                                     int indexThread = 1;
                                     for(int fold = 0; fold < numberOfFolds; fold++){
