@@ -120,8 +120,8 @@ public class ExpNSGAIIGAProblem {
                         }
                     }
 
-                    List<Instances> trainFold = preprocessor.getDatasetsTRAFolds();
-                    List<Instances> testFold = preprocessor.getDatasetsTESTFolds();
+                    List<Instances> trainFold = preprocessor.getTRAFoldAGMO();
+                    List<Instances> testFold = preprocessor.getTESTFoldAGMO();
 
                     solAndPopulation = (ArrayList) results.get(bestSolutionCounter).get();
                     List<BinarySolution> population = (List<BinarySolution>) solAndPopulation.get(1); //Para o VAR e FUN

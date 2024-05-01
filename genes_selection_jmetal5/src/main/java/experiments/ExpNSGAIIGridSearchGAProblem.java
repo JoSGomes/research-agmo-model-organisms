@@ -112,12 +112,12 @@ public class ExpNSGAIIGridSearchGAProblem {
                                         }
                                     }
 
-                                    List<Instances> trainFold = preprocessor.getDatasetsTRAFolds();
-                                    List<Instances> testFold = preprocessor.getDatasetsTESTFolds();
+                                    List<Instances> trainFold = preprocessor.getTRAFoldAGMO();
+                                    List<Instances> valFold = preprocessor.getVALFoldAGMO();
 
                                     solAndPopulation = (ArrayList) results.get(bestSolutionCounter).get();
 
-                                    double[] resultsClassify = preprocessor.getClassifier().classifySolution( (BinarySolution) solAndPopulation.get(0), trainFold, testFold, true);
+                                    double[] resultsClassify = preprocessor.getClassifier().classifySolution( (BinarySolution) solAndPopulation.get(0), trainFold, valFold, true);
 
                                     String output = "results\\results-gridsearch.csv";
                                     FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);

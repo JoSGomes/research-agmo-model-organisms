@@ -59,36 +59,9 @@ public class Preprocessor {
     public List<Instances> getVALFoldAGMO() {
         return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("val");
     }
-    
+
     public List<Instances> getTESTFoldAGMO() throws Exception{
         return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
-    }
-    
-    public List<Instances> getFoldTRAGridSearch() throws Exception{
-        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
-    }
-    
-    public List<Instances> getFoldTESTGridSearch() throws Exception{
-        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
-    }
-    
-    /** Retorna todos os folds de treino.
-     * 
-     * @return Lista de Instances
-     * @throws Exception
-     */
-    public List<Instances> getDatasetsTRAFolds() throws Exception{
-        return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
-    }
-    
-    /** Retorna todos os folds de teste genuínos.
-     *
-     * @return Lista de Instances
-     * @throws Exception
-     */
-    public List<Instances> getDatasetsTESTFolds() throws Exception{
-         return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tst");
-        
     }
 
     private HashMap<String, List<String>> getOrganismAncestors(boolean desc) throws Exception {
