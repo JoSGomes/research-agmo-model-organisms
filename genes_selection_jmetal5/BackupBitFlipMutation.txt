@@ -1,0 +1,229 @@
+package org.uma.jmetal.operator.mutation.impl;
+
+import org.uma.jmetal.operator.mutation.MutationOperator;
+import org.uma.jmetal.solution.binarysolution.BinarySolution;
+import org.uma.jmetal.util.errorchecking.Check;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
+import org.uma.jmetal.util.pseudorandom.RandomGenerator;
+import weka.core.AttributeStats;
+import weka.core.Instance;
+import weka.core.Instances;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * @author Antonio J. Nebro <antonio@lcc.uma.es>
+ * @version 1.0
+ * <p>
+ * This class implements a bit flip mutation operator.
+ */
+@SuppressWarnings("serial")
+public class BitFlipMutation<S extends BinarySolution> implements MutationOperator<S> {
+  private double mutationProbability;
+  private final RandomGenerator<Double> randomGenerator;
+
+  private HashMap<String, List<String>> AD;
+
+  private List<String> organismAttributes;
+
+  private Instances dataSet;
+
+  /**
+   * Constructor
+   */
+  public BitFlipMutation(double mutationProbability) {
+    this(mutationProbability, () -> JMetalRandom.getInstance().nextDouble());
+  }
+
+  /**
+   * Constructor
+   */
+  public BitFlipMutation(double mutationProbability, HashMap<String, List<String>> AD, List<String> organismAttributes, Instances dataSet) {
+    this(mutationProbability, () -> JMetalRandom.getInstance().nextDouble());
+    this.AD = AD;
+    this.organismAttributes = organismAttributes;
+    this.dataSet = dataSet;
+  }
+
+  /**
+   * Constructor
+   */
+  public BitFlipMutation(double mutationProbability,
+                         RandomGenerator<Double> randomGenerator) {
+    Check.probabilityIsValid(mutationProbability);
+    Check.notNull(randomGenerator);
+
+    this.mutationProbability = mutationProbability;
+    this.randomGenerator = randomGenerator;
+  }
+
+  /* Getter */
+  @Override
+  public double mutationProbability() {
+    return mutationProbability;
+  }
+
+  /* Setters */
+  public void setMutationProbability(double mutationProbability) {
+    this.mutationProbability = mutationProbability;
+  }
+
+  /**
+   * Execute() method
+   */
+  @Override
+  public S execute(S solution) {
+    Check.notNull(solution);
+
+    doMutation(mutationProbability, solution);
+    return solution;
+  }
+
+  /**
+   * Perform the mutation operation
+   *
+   * @param probability Mutation setProbability
+   * @param solution    The solution to mutate
+   */
+  public void doMutation(double probability, S solution) {
+    for (int i = 0; i < solution.variables().size(); i++) {
+        if (solution.variables().get(i).get(0)) {
+          double corr = 0.0D;
+          List<Integer> AD = getAD(this.organismAttributes.get(i)); // Lista dos index dos descendentes do gene no index J.
+
+          if (!AD.isEmpty()) {
+            for (int k = 0; k < solution.variables().size() && k < AD.size(); k++) { //Percorre todo o indivíduo procurando os genes que pertencem a lista do descendentes.
+                if (AD.contains(k) && solution.variables().get(k).get(0) &&  i != k) { // Se encontrar e também for selecionado, então é efetuado o cálculo de correlação
+                  corr = corr + correlation(i+1, k+1) / AD.size(); // +1: As instâncias do dataset estão com a classe no index 0.
+                }
+            }
+
+            if (randomGenerator.getRandomValue() <= corr) {
+              solution.variables().get(i).flip(0);
+            }
+          }
+        } else {
+          if (randomGenerator.getRandomValue() <= probability) {
+            solution.variables().get(i).flip(0);
+          }
+        }
+    }
+  }
+
+  public double correlation(int t, int v) {
+    double entropyT = entropy(t);
+    double condEntropyTV = condEntropy(t, v);
+    double entropyV = entropy(v);
+
+    if ( (entropyT + entropyV) == 0.0D) {
+      return 0.0D;
+    }
+
+    return 2 * ((entropyT  - condEntropyTV) / (entropyT + entropyV));
+  }
+
+  public double entropy(int t) {
+    AttributeStats atrT;
+    double probT1 = 0.0D;
+    double probT0 = 0.0D;
+    double ent = 0.0D;
+
+    atrT = this.dataSet.attributeStats(t);
+    if (atrT.nominalCounts[1] != 0) {
+      probT1 = (double) atrT.nominalCounts[1] / ((double) atrT.nominalCounts[0] + (double) atrT.nominalCounts[1]);
+    }
+    if (atrT.nominalCounts[0] != 0) {
+      probT0 = (double) atrT.nominalCounts[0] / ((double) atrT.nominalCounts[0] + (double) atrT.nominalCounts[1]);
+    }
+
+    if (probT1 != 0.0D) {
+      ent += probT1 * Math.log(probT1) / Math.log(2);
+    }
+    if (probT0 != 0.0D) {
+      ent += probT0 * Math.log(probT0) / Math.log(2);
+    }
+
+    return -ent;
+  }
+
+  public double condEntropy(int t, int v) {
+    double condProbTotal = 0.0D;
+
+    double condProb00 = condProb(t, v, 0, 0);
+    double condProb01 = condProb(t, v, 0, 1);
+    double condProb10 = condProb(t, v, 1, 0);
+    double condProb11 = condProb(t, v, 1, 1);
+
+    if (condProb00 != 0.0D) {
+      condProbTotal += condProb00;
+    }
+    if (condProb01 != 0.0D) {
+      condProbTotal += condProb01;
+    }
+    if (condProb10 != 0.0D) {
+      condProbTotal += condProb10;
+    }
+    if (condProb11 != 0.0D) {
+      condProbTotal += condProb11;
+    }
+
+    return -condProbTotal;
+  }
+
+  public double condProb(int t, int v, int classIndex1, int classIndex2) {
+    AttributeStats atrV;
+    double probV;
+    double valueT;
+    double valueV;
+    double probJoint = 0.0D;
+    double contTV = 0.0D;
+    for (Instance instance: this.dataSet) {
+      valueT = instance.value(t);
+      valueV = instance.value(v);
+
+      if (valueT == classIndex1 && valueV == classIndex2) {
+        probJoint += 1.0D / (double) this.dataSet.size();
+        contTV += 1.0D;
+      }
+    }
+
+    atrV = this.dataSet.attributeStats(v);
+    probV = (double) atrV.nominalCounts[classIndex2] / ( (double) atrV.nominalCounts[0] + (double) atrV.nominalCounts[1]);
+
+    if (probJoint == 0.0D || probV == 0.0D) {
+      return 0.0D;
+    }
+
+
+    double condTV = (contTV / this.dataSet.size()) / probV;
+    return probJoint * Math.log(condTV)/Math.log(2);
+  }
+
+  public List<Integer> getAD(String gene) {
+    List<String> listAD = null;
+    return getAllADGenes(gene, this.AD.get(gene), listAD);
+  }
+
+  public List<Integer> getAllADGenes(String geneInit, List<String> genes, List<String> listAD){
+    if (listAD == null) {
+      listAD = new ArrayList<>();
+    }
+
+    for (String gene: genes) {
+      if (!listAD.contains(gene) && !Objects.equals(gene, geneInit)) {
+        listAD.add(gene);
+        List<String> listOfAD = this.AD.get(gene);
+        getAllADGenes(geneInit, listOfAD, listAD);
+      }
+    }
+
+    List<Integer> listIndexes = new ArrayList<>();
+    for (String gene: listAD) {
+      listIndexes.add(this.organismAttributes.indexOf(gene));
+    }
+    return listIndexes;
+  }
+}
