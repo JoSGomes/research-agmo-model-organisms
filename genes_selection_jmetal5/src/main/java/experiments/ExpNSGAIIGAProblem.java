@@ -5,14 +5,9 @@
  */
 package experiments;
 
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +34,8 @@ public class ExpNSGAIIGAProblem {
 
         //Controle dos datasets
         int numberOfFolds = 10;
-        int numberOfThreads = calculateNumThreads(numberOfFolds);;
+        int numberOfThreads = calculateNumThreads(numberOfFolds);
+
         Preprocessor preprocessor = null;
         String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
         String[] classifier = {"KNN", "NB", "J48"};
@@ -53,6 +49,9 @@ public class ExpNSGAIIGAProblem {
 
         for(String runningDataSet : dataSets){
             for(String runningClassifier : classifier){
+                FileHandler.closeCSVWriter();
+                String output = "results\\" + runningDataSet + runningClassifier + "\\results.csv";
+                FileHandler.initCSVWriter(output);
                 for(ModelOrganism organism : ModelOrganism.values()){
                     Map<Integer, Future<Object>> results = new HashMap<>();
                     ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
@@ -103,19 +102,19 @@ public class ExpNSGAIIGAProblem {
 
                     //Testar para a melhor solução gerada
                     int bestSolutionCounter = 0;
-                    double bestGMean = 0, bestRatioR = 0, auxGMean, auxRatioR;
+                    double bestGMean = 0, bestSelectR = 0, auxGMean, auxSelectR;
                     ArrayList solAndPopulation;
                     BinarySolution auxSolution;
                     for(int i = 1; i < (results.size() + 1); i++){
                         solAndPopulation = (ArrayList) results.get(i).get();
                         auxSolution =  (BinarySolution) solAndPopulation.get(0);
                         auxGMean = auxSolution.objectives()[0] *(-1);
-                        auxRatioR = auxSolution.objectives()[1]*(-1);
+                        auxSelectR = auxSolution.objectives()[1];
 
-                        if(auxGMean > bestGMean || (auxGMean == bestGMean && auxRatioR > bestRatioR)){
+                        if(auxGMean > bestGMean || (auxGMean == bestGMean && auxSelectR > bestSelectR)){
                             bestSolutionCounter = i;
                             bestGMean = auxGMean;
-                            bestRatioR = auxRatioR;
+                            bestSelectR = auxSelectR;
                         }
                     }
 
@@ -131,9 +130,9 @@ public class ExpNSGAIIGAProblem {
                                 .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
                                 .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + runningDataSet + runningClassifier + "\\" + runningDataSet + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + runningDataSet + ".csv", ","))
                                 .print();
-                    String output = "results\\" + runningDataSet + runningClassifier + "\\results.csv";
-                    FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
 
+
+                    FileHandler.saveResults(populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
                     executor.shutdown();
                 }
             }

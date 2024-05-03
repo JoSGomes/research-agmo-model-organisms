@@ -11,17 +11,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ExpNSGAIIGridSearchGAProblem {
 
     public static void main(String[] args) throws Exception {
+
         int maxEvaluation;
+
+        String output = "results\\results-gridsearch.csv";
+        FileHandler.initCSVWriter(output);
 
         // Grid
         float[] mutationSearch = {0.2F, 0.4F, 0.6F};
@@ -31,10 +32,11 @@ public class ExpNSGAIIGridSearchGAProblem {
 
         // Controle dos datasets
         int numberOfFolds = 10;
-        int numberOfThreads = calculateNumThreads(numberOfFolds);;
+        int numberOfThreads = calculateNumThreads(numberOfFolds);
+
         Preprocessor preprocessor = null;
-        String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"}; // GridSearch para apenas um tipo de dataset
-        String[] classifier = {"KNN"}; // GridSearch somente para o KNN
+        String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
+        String[] classifier = {"KNN"};
 
         System.out.println("Reading all the data...");
         HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
@@ -94,19 +96,19 @@ public class ExpNSGAIIGridSearchGAProblem {
 
                                     //Testar para a melhor solução gerada
                                     int bestSolutionCounter = 0;
-                                    double bestGMean = 0, bestRatioR = 0, auxGMean, auxRatioR;
+                                    double bestGMean = 0, bestSelectR = 0, auxGMean, auxSelectR;
                                     ArrayList solAndPopulation;
                                     BinarySolution auxSolution;
                                     for(int i = 1; i < (results.size() + 1); i++){
                                         solAndPopulation = (ArrayList) results.get(i).get();
                                         auxSolution =  (BinarySolution) solAndPopulation.get(0);
                                         auxGMean = auxSolution.objectives()[0] *(-1);
-                                        auxRatioR = auxSolution.objectives()[1]*(-1);
+                                        auxSelectR = auxSolution.objectives()[1];
 
-                                        if(auxGMean > bestGMean || (auxGMean == bestGMean && auxRatioR > bestRatioR)){
+                                        if(auxGMean > bestGMean || (auxGMean == bestGMean && auxSelectR > bestSelectR)){
                                             bestSolutionCounter = i;
                                             bestGMean = auxGMean;
-                                            bestRatioR = auxRatioR;
+                                            bestSelectR = auxSelectR;
                                         }
                                     }
 
@@ -117,8 +119,7 @@ public class ExpNSGAIIGridSearchGAProblem {
 
                                     double[] resultsClassify = preprocessor.getClassifier().classifySolution( (BinarySolution) solAndPopulation.get(0), trainFold, valFold, true);
 
-                                    String output = "results\\results-gridsearch.csv";
-                                    FileHandler.saveResults(output, populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
+                                    FileHandler.saveResults(populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
 
                                     executor.shutdown();
                                 }
@@ -128,6 +129,7 @@ public class ExpNSGAIIGridSearchGAProblem {
                 }
             }
         }
+        FileHandler.closeCSVWriter();
     }
 
     // Calculates an adequate number of threads to process in parallel

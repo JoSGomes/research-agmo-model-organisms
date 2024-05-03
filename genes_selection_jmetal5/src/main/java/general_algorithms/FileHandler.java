@@ -12,8 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.opencsv.CSVWriter;
 import data_processing.ModelOrganism;
@@ -28,6 +26,24 @@ import weka.core.converters.ConverterUtils.DataSource;
  * @author pbexp
  */
 public class FileHandler {
+
+
+    private static CSVWriter csvWriter = null; // Declaração do CSVWriter estático
+    // Outros métodos e variáveis da classe...
+
+    public static synchronized void initCSVWriter(String output) throws IOException {
+        if (csvWriter == null) {
+            Writer writer = new FileWriter(output, true);
+            csvWriter = new CSVWriter(writer);
+        }
+    }
+
+    public static synchronized void closeCSVWriter() throws IOException {
+        if (csvWriter != null) {
+            csvWriter.close();
+            csvWriter = null;
+        }
+    }
 
     /**
      *
@@ -131,200 +147,7 @@ public class FileHandler {
         return allDatasets;
     }
 
-
     /**
-     *
-     * @param organism
-     * @param fold
-     * @param runningDataset
-     * @return
-     * @throws Exception
-     */
-    public static ArrayList<Instances> readDatasetTRAFoldAGMO(ModelOrganism organism, int fold, String runningDataset) throws Exception
-    {
-        ArrayList<Instances> foldData = new ArrayList<>();
-
-        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset
-                + PathOfDataset.rootTRAandTESTAGMO.path + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);
-        }
-        foldData.add(data);
-
-
-        return foldData;
-    }
-
-    /**
-     *
-     * @param organism
-     * @param fold
-     * @param runningDataset
-     * @return
-     * @throws Exception
-     */
-    public static ArrayList<Instances> readDatasetTESTFoldAGMO(ModelOrganism organism, int fold, String runningDataset) throws Exception
-    {
-        ArrayList<Instances> foldData = new ArrayList<>();
-
-        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset
-                + PathOfDataset.rootTRAandTESTAGMO.path + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);
-        }
-        foldData.add(data);
-
-
-        return foldData;
-    }
-
-    /**
-     * Retorna o uma ArrayList com apenas um elemento que corresponde ao Fold
-     * especificado de treino  dos dados de teste da melhor solução resultada
-     * do AGMO.
-     * @param organism Organismo que se deseja extrair os dados.
-     * @param fold Fold específico dos dados do organismo.
-     * @param runningDataset
-     * @return ArrayList com apenas um elemento.
-     * @throws Exception
-     */
-    public static Instances readDatasetTRAFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-
-        Instances data;
-
-        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
-                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-
-        data = new Instances(new BufferedReader(new FileReader(file)));
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);
-        }
-
-        return data;
-    }
-
-    /**
-     * Retorna o uma ArrayList com apenas um elemento que corresponde ao Fold
-     * especificado de teste  dos dados de teste da melhor solução resultada
-     * do AGMO.
-     * @param organism Organismo que se deseja extrair os dados.
-     * @param fold Fold específico dos dados do organismo.
-     * @param runningDataset
-     * @return ArrayList com apenas um elemento.
-     * @throws Exception
-     */
-    public static ArrayList<Instances> readDatasetTESTFold(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-
-        ArrayList<Instances> foldsData = new ArrayList<>();
-
-        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
-                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-
-
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);
-        }
-        foldsData.add(data);
-
-
-        return foldsData;
-    }
-
-    /**
-     *
-     * @param organism
-     * @param fold
-     * @param runningDataset
-     * @return
-     * @throws Exception
-     */
-    public static ArrayList<Instances> readDatasetTRAFolds(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-
-        ArrayList<Instances> foldsData = new ArrayList<>();
-
-        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
-                + organism.originalDataset + "TRA-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);
-        }
-        foldsData.add(data);
-
-
-        return foldsData;
-    }
-
-    /**
-     *
-     * @param organism
-     * @param fold
-     * @return
-     * @throws Exception
-     */
-    public static ArrayList<Instances> readDatasetTESTFolds(ModelOrganism organism, int fold, String runningDataset) throws Exception{
-        ArrayList<Instances> foldsData = new ArrayList<>();
-
-        String file = PathOfDataset.root.path + runningDataset + organism.originalDataset + PathOfDataset.traAndTest.path
-                + organism.originalDataset + "TEST-" + fold + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-
-
-        DataSource source = new DataSource(file);
-        Instances data = source.getDataSet();
-        if(data.classIndex() == -1 ){
-            data.setClassIndex(data.numAttributes() -1);
-        }
-        foldsData.add(data);
-
-        return foldsData;
-    }
-
-    /**
-     *
-     * @param organism
-     * @param folds
-     * @param tra
-     * @return
-     * @throws Exception
-     */
-    public static ArrayList<Instances> readFoldGridSearch(ModelOrganism organism, int folds, boolean tra) throws Exception {
-        ArrayList<Instances> foldData = new ArrayList<>();
-
-        String file = "";
-        for(int n =0; n < folds; n++){
-            if(tra) {
-                file = PathOfDataset.root.path + organism.originalDataset
-                          + PathOfDataset.rootTRAandTESTAGMO.path
-                          + organism.originalDataset+ "TRA-" + n + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-            }
-            else {
-                file = PathOfDataset.root.path + organism.originalDataset
-                          + PathOfDataset.rootTRAandTESTAGMO.path
-                          + organism.originalDataset+ "TEST-" + n + PathOfDataset.foldPath.path + FileExtension.arff.extension;
-            }
-            DataSource source = new DataSource(file);
-            Instances fold = source.getDataSet();
-            if(fold.classIndex() == -1 ){
-                fold.setClassIndex(fold.numAttributes() -1);
-            }
-            foldData.add(fold);
-        }
-
-        return foldData;
-    }
-
-    /**
-     *
-     * @param output
      * @param populationSizeA
      * @param mutationA
      * @param crossoverA
@@ -332,7 +155,7 @@ public class FileHandler {
      * @param organism
      * @param bestGMean
      */
-    public static void saveResults(String output, int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean, int fold, int kValue, boolean gridSearch){
+    public static void saveResults(int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean, int fold, int kValue, boolean gridSearch) throws IOException {
         String mutation = Double.toString(mutationA);
         String crossover = Double.toString(crossoverA);
         String populationSize = Integer.toString(populationSizeA);
@@ -357,35 +180,14 @@ public class FileHandler {
 
 
         resultsCSV.add(aux);
-        writeResults(output);
+        writeResults();
     }
 
     /**
      *
-     * @param output Nome da saída
      */
-    public static void writeResults(String output){
-        try{
-            try (Writer writer = new FileWriter(output); CSVWriter csvWriter = new CSVWriter(writer)) {
-                csvWriter.writeAll(resultsCSV);
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public static void saveResults(String output, double[] results, String organism, int fold){
-        if(resultsCSV.isEmpty()){
-            String[] headers = new String[]{"organism", "populationSize","mutationProbability", "crossoverProbability", "Fold", "GMean" , "Best GMean AGMO", "selectionRate"};
-            resultsCSV.add(headers);
-        }
-
-        double GMean = results[0];
-        String[] aux = {organism, "", "", "", Integer.toString(fold), Double.toString(GMean), "", ""};
-
-        resultsCSV.add(aux);
-        writeResults(output);
+    public static synchronized void writeResults() throws IOException {
+        csvWriter.writeAll(resultsCSV);
     }
 
     public static List<String> readOrganismAttributes(Instances data) throws Exception {
