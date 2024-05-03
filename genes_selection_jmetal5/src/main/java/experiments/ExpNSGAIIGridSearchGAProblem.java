@@ -55,9 +55,9 @@ public class ExpNSGAIIGridSearchGAProblem {
                     }
                     for(String runningClassifier : classifier){
                         for (int kValue : kValueSearch){
-                            Map<Integer, Future<Object>> results = new HashMap<>();
                             for(ModelOrganism organism : ModelOrganism.values()){ // GridSearch para todos os organismos
                                 for(String runningDataSet : dataSets){
+                                    Map<Integer, Future<Object>> results = new HashMap<>();
                                     ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
                                     int indexThread = 1;
                                     for(int fold = 0; fold < numberOfFolds; fold++){
