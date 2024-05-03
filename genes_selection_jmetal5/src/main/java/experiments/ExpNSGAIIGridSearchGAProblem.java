@@ -33,11 +33,10 @@ public class ExpNSGAIIGridSearchGAProblem {
         int numberOfFolds = 10;
         int numberOfThreads = calculateNumThreads(numberOfFolds);;
         Preprocessor preprocessor = null;
-        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = new HashMap<>();
         String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"}; // GridSearch para apenas um tipo de dataset
         String[] classifier = {"KNN"}; // GridSearch somente para o KNN
 
-        allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
+        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
 
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
         System.out.println("Using " + numberOfThreads + " threads for parallel execution.");

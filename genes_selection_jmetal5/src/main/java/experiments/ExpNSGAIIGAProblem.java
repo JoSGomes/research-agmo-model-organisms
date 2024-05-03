@@ -44,6 +44,8 @@ public class ExpNSGAIIGAProblem {
         String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
         String[] classifier = {"KNN", "NB", "J48"};
 
+        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
+
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
         System.out.println("Using " + numberOfThreads + " threads for parallel execution.");
 
@@ -73,7 +75,7 @@ public class ExpNSGAIIGAProblem {
                             System.out.print("\n##########################################\n");
                             System.out.println("Reading all the data...");
 
-                            preprocessor = new Preprocessor(organism, runningDataSet, dataSets, runningClassifier, fold, 1);
+                            preprocessor = new Preprocessor(organism, runningDataSet, allDatasets, runningClassifier, fold, 1);
 
                             System.out.println("The read have been complete and the data are into memory!");
                             System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet+ " // FOLD - " + fold);
