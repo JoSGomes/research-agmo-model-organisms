@@ -35,6 +35,9 @@ public class FileHandler {
         if (csvWriter == null) {
             Writer writer = new FileWriter(output, true);
             csvWriter = new CSVWriter(writer);
+            String[] headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "kValue", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
+            csvWriter.writeAll(Collections.singletonList(headers));
+            csvWriter.flush();
         }
     }
 
@@ -162,22 +165,13 @@ public class FileHandler {
         String GMean = Double.toString(results[0]);
         String selectionRate = Double.toString(results[1]);
         String[] aux = null;
-        
-        if(resultsCSV.isEmpty()){
-            String[] headers;
-            if (!gridSearch) {
-                headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
-                aux = new String[]{organism, populationSize, mutation, crossover, runningDataset, Integer.toString(fold), GMean, selectionRate, Double.toString(bestGMean)};
 
-            }
-            else {
-                headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "kValue", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
-                aux = new String[]{organism, populationSize, mutation, crossover, String.valueOf(kValue), runningDataset, Integer.toString(fold), GMean, selectionRate, Double.toString(bestGMean)};
-
-            }
-            resultsCSV.add(headers);
+        if (!gridSearch) {
+            aux = new String[]{organism, populationSize, mutation, crossover, runningDataset, Integer.toString(fold), GMean, selectionRate, Double.toString(bestGMean)};
         }
-
+        else {
+            aux = new String[]{organism, populationSize, mutation, crossover, String.valueOf(kValue), runningDataset, Integer.toString(fold), GMean, selectionRate, Double.toString(bestGMean)};
+        }
 
         resultsCSV.add(aux);
         writeResults();
@@ -188,6 +182,7 @@ public class FileHandler {
      */
     public static synchronized void writeResults() throws IOException {
         csvWriter.writeAll(resultsCSV);
+        csvWriter.flush();
     }
 
     public static List<String> readOrganismAttributes(Instances data) throws Exception {
