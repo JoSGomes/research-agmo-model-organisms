@@ -37,8 +37,8 @@ public class Preprocessor {
      * @param runningClassifier
      * @throws Exception
      */
-    public Preprocessor(ModelOrganism organism, String runningDataSet, String[] ableDatasets, String runningClassifier, int fold, int kValue) throws Exception {
-        this.allDataset = FileHandler.readAllDatasetsFolds(ableDatasets); // Todos os datasets
+    public Preprocessor(ModelOrganism organism, String runningDataSet, HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> ableDatasets, String runningClassifier, int fold, int kValue) throws Exception {
+        this.allDataset = ableDatasets; // Todos os datasets
         this.runningClassifier = runningClassifier; //NB, KNN, J48
         this.runningDataset = runningDataSet; //BP, MF, CC, BPMF, BPCC, MFCC, BPMFCC
         this.organism = organism; // Caenorhabditis elegans, Drosophila melanogaster, Mus musculus, Saccharomyces cerevisiae

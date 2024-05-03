@@ -33,9 +33,11 @@ public class ExpNSGAIIGridSearchGAProblem {
         int numberOfFolds = 10;
         int numberOfThreads = calculateNumThreads(numberOfFolds);;
         Preprocessor preprocessor = null;
+        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = new HashMap<>();
         String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"}; // GridSearch para apenas um tipo de dataset
         String[] classifier = {"KNN"}; // GridSearch somente para o KNN
 
+        allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
 
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
         System.out.println("Using " + numberOfThreads + " threads for parallel execution.");
@@ -65,7 +67,7 @@ public class ExpNSGAIIGridSearchGAProblem {
                                             System.out.print("\n##########################################\n");
                                             System.out.println("Reading all the data...");
 
-                                            preprocessor = new Preprocessor(organism, runningDataSet, dataSets, runningClassifier, fold, kValue);
+                                            preprocessor = new Preprocessor(organism, runningDataSet, allDatasets, runningClassifier, fold, kValue);
 
                                             System.out.println("The read have been complete and the data are into memory!");
                                             System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet+ " // FOLD - " + fold);
