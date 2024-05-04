@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.List;
 
+import general_algorithms.FileHandler;
+import org.uma.jmetal.util.fileoutput.SolutionListOutput;
+import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import problem.GAProblem;
 import data_processing.Preprocessor;
 
@@ -77,18 +80,17 @@ public class NSGAIIAlgorithm implements Callable {
     
     @Override
     public ArrayList call() throws Exception {
-        ArrayList solAndPopulation = null;
         try {
-            solAndPopulation = execute();
+            execute();
         } 
         catch (Exception ex) {
             System.err.println("Classe: NSGAII > erro na execução do método: " + ex);
             System.exit(-1);
         }
-        return solAndPopulation;
+        return new ArrayList();
     }
     
-    public ArrayList execute() throws Exception
+    public void execute() throws Exception
     {          
             problem = new GAProblem(preprocessor);
             crossover = new HUXCrossover<>(probabilityCrossoverSelectInstances);
@@ -136,8 +138,27 @@ public class NSGAIIAlgorithm implements Callable {
             ArrayList solAndPopulation = new ArrayList();
             solAndPopulation.add(bestSolution);
             solAndPopulation.add(population);
-            
-            return solAndPopulation;  
+
+            // GRID SEARCH
+            List<Instances> trainFold = preprocessor.getTRAFoldAGMO();
+            List<Instances> valFold = preprocessor.getVALFoldAGMO();
+
+            double[] resultsClassify = preprocessor.getClassifier().classifySolution(bestSolution, trainFold, valFold);
+
+            FileHandler.saveResults(this.populationSizeSelectInstances, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, this.preprocessor.getRunningDataset(), bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
+            //EXECUÇÂO NORMAL //Precisa retirar kValue dos headers depois de executar o gridsearch.
+//            List<Instances> trainFold = this.preprocessor.getTRAFoldAGMO();
+//            List<Instances> testFold = this.preprocessor.getTESTFoldAGMO();
+//
+//            double[] resultsClassify = preprocessor.getClassifier().classifySolution( bestSolution, trainFold, testFold);
+//            SolutionListOutput solListOutput = new SolutionListOutput(population);
+//            solListOutput
+//                    .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + this.preprocessor.getRunningDataset() + this.preprocessor.getRunningClassifier() + "\\" + this.preprocessor.getRunningDataset() + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + this.preprocessor.getRunningDataset() + ".csv", ","))
+//                    .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + this.preprocessor.getRunningDataset() + this.preprocessor.getRunningClassifier() + "\\" + this.preprocessor.getRunningDataset() + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + this.preprocessor.getRunningDataset() + ".csv", ","))
+//                    .print();
+//
+//
+//            FileHandler.saveResults(this.populationSizeSelectInstances, this.probabilityMutationSelectInstances, this.probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, this.preprocessor.getRunningDataset(), bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
     }
 }
 

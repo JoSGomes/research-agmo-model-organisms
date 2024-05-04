@@ -131,6 +131,10 @@ public class Preprocessor {
         return this.runningDataset;
     }
 
+    public String getRunningClassifier() {
+        return runningClassifier;
+    }
+
     public int getFold(){
         return this.fold;
     }

@@ -4,7 +4,6 @@ import data_processing.ModelOrganism;
 import data_processing.Preprocessor;
 import general_algorithms.FileHandler;
 import nsgaii.NSGAIIAlgorithm;
-import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import weka.core.Instances;
 
 import java.util.ArrayList;
@@ -93,34 +92,6 @@ public class ExpNSGAIIGridSearchGAProblem {
                                         Future<Object> future = results.get(key);
                                         Object aux = future.get();
                                     }
-
-                                    //Testar para a melhor solução gerada
-                                    int bestSolutionCounter = 0;
-                                    double bestGMean = 0, bestSelectR = 0, auxGMean, auxSelectR;
-                                    ArrayList solAndPopulation;
-                                    BinarySolution auxSolution;
-                                    for(int i = 1; i < (results.size() + 1); i++){
-                                        solAndPopulation = (ArrayList) results.get(i).get();
-                                        auxSolution =  (BinarySolution) solAndPopulation.get(0);
-                                        auxGMean = auxSolution.objectives()[0] *(-1);
-                                        auxSelectR = auxSolution.objectives()[1];
-
-                                        if(auxGMean > bestGMean || (auxGMean == bestGMean && auxSelectR > bestSelectR)){
-                                            bestSolutionCounter = i;
-                                            bestGMean = auxGMean;
-                                            bestSelectR = auxSelectR;
-                                        }
-                                    }
-
-                                    List<Instances> trainFold = preprocessor.getTRAFoldAGMO();
-                                    List<Instances> valFold = preprocessor.getVALFoldAGMO();
-
-                                    solAndPopulation = (ArrayList) results.get(bestSolutionCounter).get();
-
-                                    double[] resultsClassify = preprocessor.getClassifier().classifySolution( (BinarySolution) solAndPopulation.get(0), trainFold, valFold, true);
-
-                                    FileHandler.saveResults(populationSize, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, runningDataSet, bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
-
                                     executor.shutdown();
                                 }
                             }

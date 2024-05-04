@@ -45,28 +45,8 @@ public class Classifier {
         this.preProcessor = p1;
         this.runningClassifier = runningClassifier;
     }
-    
-    public double[] classifyResult(ArrayList<Instances> trainFolds, ArrayList<Instances> testFolds, boolean bestSolution) throws Exception{
-        switch(this.runningClassifier){
-            case "KNN" -> {
-                IBk classifier = new IBk(this.preProcessor.getKValue());
-                JaccardDistance jdDist = new JaccardDistance();
-                classifier.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
-                return calcGMeanSelectionRate(classifier, trainFolds, testFolds, bestSolution);
-            }
-            case "NB" -> {
-                NaiveBayes classifier = new NaiveBayes();
-                return calcGMeanSelectionRate(classifier, trainFolds, testFolds, bestSolution);
-            }
-            case "J48" -> {
-                J48 classifier = new J48();
-                return this.calcGMeanSelectionRate(classifier, trainFolds, testFolds, bestSolution);
-            }
-        }       
-        return null;
-    }
-    
-    public double[] classifySolution(BinarySolution bestSolution, List<Instances> trainFolds, List<Instances> testFolds, boolean bestSolutionFlag) throws Exception{
+
+    public double[] classifySolution(BinarySolution bestSolution, List<Instances> trainFolds, List<Instances> testFolds) throws Exception{
         AbstractClassifier classifier = null;
         switch(this.runningClassifier){
             case "KNN" -> {
@@ -81,7 +61,7 @@ public class Classifier {
         if (classifier != null){
             List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
             List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
-            return calcGMeanSelectionRate(classifier, traData, testData, bestSolutionFlag);
+            return calcGMeanSelectionRate(classifier, traData, testData);
         }
         return null;
     }
@@ -94,7 +74,7 @@ public class Classifier {
      * de Distância a de Jaccard.
      * @return Retorna a GMean e a Reduction Ratio.
      */
-    private double[] calcGMeanSelectionRate(AbstractClassifier classifier, List<Instances> tra, List<Instances> test, boolean bestSolution) throws Exception {
+    private double[] calcGMeanSelectionRate(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg;
         double sensivity, specificity;
         double selectionRate;
@@ -178,28 +158,5 @@ public class Classifier {
         
         return newData;
     }
-    
-    /** Método dedicado ao GridSearch, mais otimizado para que não demore
-     * muito tempo na execução, tem o mesmo propósito do classificador 
-     * original.
-     *
-     * @param s1 Solução gerada pelo NSGAII.
-     * @param tra Instâncias de treino.
-     * @param test Instâncias de teste.
-     * @return Retorna uma array de tamanho igual a 2, no primeiro está a GMean
-     * e na Segunda a Reduction Ratio.
-     * @throws Exception
-     */
-    public double[] classifyKNNGridSearch(BinarySolution s1, List<Instances> tra, List<Instances> test, boolean bestSolutionFlag) throws Exception {
-        IBk knn = new IBk(1);
-	    JaccardDistance jdDist = new JaccardDistance();
-	
-        knn.getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
-        
-        List<Instances> traFold = this.getSelectedDatasetFromSolution(s1, tra);
-        List<Instances> testFold = this.getSelectedDatasetFromSolution(s1, test);
-        
-	    return this.calcGMeanSelectionRate(knn, traFold, testFold, bestSolutionFlag);
-    }
 
-}  
+}

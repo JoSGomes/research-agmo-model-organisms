@@ -16,7 +16,6 @@ import java.util.*;
 import com.opencsv.CSVWriter;
 import data_processing.ModelOrganism;
 
-//import smile.glm.model.Model;
 import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
@@ -35,6 +34,7 @@ public class FileHandler {
         if (csvWriter == null) {
             Writer writer = new FileWriter(output, true);
             csvWriter = new CSVWriter(writer);
+            //Precisa retirar kValue dos headers depois de executar o gridsearch.
             String[] headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "kValue", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
             csvWriter.writeAll(Collections.singletonList(headers));
             csvWriter.flush();
@@ -158,7 +158,7 @@ public class FileHandler {
      * @param organism
      * @param bestGMean
      */
-    public static void saveResults(int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean, int fold, int kValue, boolean gridSearch) throws IOException {
+    public static synchronized void saveResults(int populationSizeA, double mutationA, double crossoverA, double[] results, String organism, String runningDataset, double bestGMean, int fold, int kValue, boolean gridSearch) throws IOException {
         String mutation = Double.toString(mutationA);
         String crossover = Double.toString(crossoverA);
         String populationSize = Integer.toString(populationSizeA);
@@ -183,6 +183,7 @@ public class FileHandler {
     public static synchronized void writeResults() throws IOException {
         csvWriter.writeAll(resultsCSV);
         csvWriter.flush();
+        resultsCSV = new ArrayList<String[]>();
     }
 
     public static List<String> readOrganismAttributes(Instances data) throws Exception {
