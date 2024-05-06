@@ -162,3 +162,4 @@
 "Caenorhabditis elegans","100","0.20000000298023224","0.5","1","BP","0","69.76","0.5097897026831038","69.76"
 "Caenorhabditis elegans","100","0.20000000298023224","0.5","1","BP","9","76.53999999999999","0.4945612762871646","76.53999999999999"
 "Caenorhabditis elegans","100","0.20000000298023224","0.5","1","BP","8","73.08","0.4960116026105874","76.14999999999999"
+"organism","populationSize","mutationProbability","crossoverProbability","kValue","runningDataset","fold","GMean","selectionRate","Best GMean AGMO"

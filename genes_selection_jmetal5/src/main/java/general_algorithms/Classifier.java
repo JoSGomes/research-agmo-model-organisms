@@ -102,7 +102,7 @@ public class Classifier {
         sensivity = truePos / (truePos + falseNeg);
         specificity = trueNeg / (trueNeg + falsePos);
 
-        GMean = (Math.round((Math.sqrt(sensivity * specificity))*10000.00)/10000.00)*100.00;
+        GMean = Math.sqrt(sensivity * specificity);
         
         selectionRate =  ( this.preProcessor.getNumAttributes() - cont)
                            / (double) this.preProcessor.getNumAttributes();

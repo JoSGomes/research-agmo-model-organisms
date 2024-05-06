@@ -30,12 +30,13 @@ public class ExpNSGAIIGridSearchGAProblem {
         int[] kValueSearch = {1, 5, 9};
 
         // Controle dos datasets
-        int numberOfFolds = 10;
-        int numberOfThreads = calculateNumThreads(numberOfFolds);
+        int fold = 3;
 
         Preprocessor preprocessor = null;
         String[] dataSets = {"BP", "MF", "CC", "BPMF", "BPCC", "MFCC", "BPMFCC"};
         String[] classifier = {"KNN"};
+
+        int numberOfThreads = calculateNumThreads(dataSets.length);
 
         System.out.println("Reading all the data...");
         HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
@@ -59,41 +60,39 @@ public class ExpNSGAIIGridSearchGAProblem {
                     for(String runningClassifier : classifier){
                         for (int kValue : kValueSearch){
                             for(ModelOrganism organism : ModelOrganism.values()){ // GridSearch para todos os organismos
+                                Map<Integer, Future<Object>> results = new HashMap<>();
+                                ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+                                int indexThread = 1;
                                 for(String runningDataSet : dataSets){
-                                    Map<Integer, Future<Object>> results = new HashMap<>();
-                                    ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
-                                    int indexThread = 1;
-                                    for(int fold = 0; fold < numberOfFolds; fold++){
-                                        try
-                                        {
-                                            preprocessor = new Preprocessor(organism, runningDataSet, allDatasets, runningClassifier, fold, kValue);
+                                    try
+                                    {
+                                        preprocessor = new Preprocessor(organism, runningDataSet, allDatasets, runningClassifier, fold, kValue);
 
-                                            System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet+ " // FOLD - " + fold);
-                                            Callable<Object> experiment = new NSGAIIAlgorithm(
-                                                    preprocessor,
-                                                    populationSize,
-                                                    maxEvaluation,
-                                                    probabilityCrossoverSelectInstances,
-                                                    probabilityMutationSelectInstances,
-                                                    indexThread
-                                            );
+                                        System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet+ " // FOLD - " + fold);
+                                        Callable<Object> experiment = new NSGAIIAlgorithm(
+                                                preprocessor,
+                                                populationSize,
+                                                maxEvaluation,
+                                                probabilityCrossoverSelectInstances,
+                                                probabilityMutationSelectInstances,
+                                                indexThread
+                                        );
 
-                                            Future<Object> submit = executor.submit(experiment);
-                                            results.put(indexThread, submit);
-                                            indexThread++;
+                                        Future<Object> submit = executor.submit(experiment);
+                                        results.put(indexThread, submit);
+                                        indexThread++;
 
-                                        }catch (Exception ex){
-                                            Logger.getLogger(NSGAIIAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
-                                        }
+                                    }catch (Exception ex){
+                                        Logger.getLogger(NSGAIIAlgorithm.class.getName()).log(Level.SEVERE, null, ex);
                                     }
-
-                                    //Espera da execução de cada thread.
-                                    for (int key : results.keySet()){
-                                        Future<Object> future = results.get(key);
-                                        Object aux = future.get();
-                                    }
-                                    executor.shutdown();
                                 }
+
+                                //Espera da execução de cada thread.
+                                for (int key : results.keySet()){
+                                    Future<Object> future = results.get(key);
+                                    Object aux = future.get();
+                                }
+                                executor.shutdown();
                             }
                         }
                     }
