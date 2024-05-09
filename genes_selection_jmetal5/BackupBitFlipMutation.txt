@@ -9,10 +9,7 @@ import weka.core.AttributeStats;
 import weka.core.Instance;
 import weka.core.Instances;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
@@ -30,7 +27,7 @@ public class BitFlipMutation<S extends BinarySolution> implements MutationOperat
   private List<String> organismAttributes;
 
   private Instances dataSet;
-
+  private Map<String, List<Integer>> cache;
   /**
    * Constructor
    */
@@ -46,6 +43,7 @@ public class BitFlipMutation<S extends BinarySolution> implements MutationOperat
     this.AD = AD;
     this.organismAttributes = organismAttributes;
     this.dataSet = dataSet;
+    this.cache = new HashMap<>();
   }
 
   /**
@@ -204,26 +202,32 @@ public class BitFlipMutation<S extends BinarySolution> implements MutationOperat
 
   public List<Integer> getAD(String gene) {
     List<String> listAD = null;
-    return getAllADGenes(gene, this.AD.get(gene), listAD);
+    return getAllADGenes(gene, this.AD.get(gene), listAD, this.cache);
   }
 
-  public List<Integer> getAllADGenes(String geneInit, List<String> genes, List<String> listAD){
+  public List<Integer> getAllADGenes(String geneInit, List<String> genes, List<String> listAD, Map<String, List<Integer>> cache) {
+    if (cache.containsKey(geneInit)) {
+      return cache.get(geneInit);
+    }
+
     if (listAD == null) {
       listAD = new ArrayList<>();
     }
 
-    for (String gene: genes) {
+    for (String gene : genes) {
       if (!listAD.contains(gene) && !Objects.equals(gene, geneInit)) {
         listAD.add(gene);
         List<String> listOfAD = this.AD.get(gene);
-        getAllADGenes(geneInit, listOfAD, listAD);
+        getAllADGenes(geneInit, listOfAD, listAD, cache);
       }
     }
 
     List<Integer> listIndexes = new ArrayList<>();
-    for (String gene: listAD) {
+    for (String gene : listAD) {
       listIndexes.add(this.organismAttributes.indexOf(gene));
     }
+
+    cache.put(geneInit, listIndexes);
     return listIndexes;
   }
 }
