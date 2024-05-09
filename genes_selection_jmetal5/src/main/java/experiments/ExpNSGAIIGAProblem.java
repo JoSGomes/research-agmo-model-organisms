@@ -27,7 +27,7 @@ import weka.core.Instances;
  * @author pbexp
  */
 public class ExpNSGAIIGAProblem {
-    
+
     public static void main(String[] args) throws InterruptedException, ExecutionException, Exception, Exception {
         int populationSize = 100;
         int maxEvaluation = 20000;
@@ -41,7 +41,7 @@ public class ExpNSGAIIGAProblem {
         String[] classifier = {"KNN", "NB", "J48"};
 
         System.out.println("Reading all the data...");
-        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
+        ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
         System.out.println("The read have been complete and the data are into memory!");
 
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
@@ -104,18 +104,18 @@ public class ExpNSGAIIGAProblem {
             }
         }
     }
-    
+
     // Calculates an adequate number of threads to process in parallel
     private static int calculateNumThreads(int numFolds) {
         int cores = Runtime.getRuntime().availableProcessors();
-        
-        int threads;       
+
+        int threads;
         if (numFolds <= cores) { // process all folds at the same time
             threads = numFolds;
-        } 
+        }
         else if (cores > numFolds / 2.0) { // balance the load in 2 batchs
             threads = (int) Math.ceil(numFolds / 2.0);
-        } 
+        }
         else { // use all cores to process
             threads = cores;
         }

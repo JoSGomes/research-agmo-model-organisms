@@ -7,6 +7,7 @@ package data_processing;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import weka.core.Instances;
 
@@ -19,11 +20,11 @@ import general_algorithms.FileHandler;
  */
 public class Preprocessor {
     private final int numAtributes;
-    private final ModelOrganism organism;   
+    private final ModelOrganism organism;
     private Classifier classifier;
     private final String runningDataset;
     private final String runningClassifier;
-    private final HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDataset;
+    private final ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, List<Instances>>>> allDataset;
     private final HashMap<String, List<String>> ascTerms;
     private final HashMap<String, List<String>> descTerms;
     private final HashMap<String, List<String>> megerdADTerms;
@@ -37,7 +38,7 @@ public class Preprocessor {
      * @param runningClassifier
      * @throws Exception
      */
-    public Preprocessor(ModelOrganism organism, String runningDataSet, HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> ableDatasets, String runningClassifier, int fold, int kValue) throws Exception {
+    public Preprocessor(ModelOrganism organism, String runningDataSet, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, List<Instances>>>> ableDatasets, String runningClassifier, int fold, int kValue) throws Exception {
         this.allDataset = ableDatasets; // Todos os datasets
         this.runningClassifier = runningClassifier; //NB, KNN, J48
         this.runningDataset = runningDataSet; //BP, MF, CC, BPMF, BPCC, MFCC, BPMFCC
@@ -51,7 +52,7 @@ public class Preprocessor {
         this.numAtributes = this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("val").get(this.fold).get(0).numAttributes() - 1;
         this.kValue = kValue;
     }
-    
+
     public List<Instances> getTRAFoldAGMO() {
         return this.allDataset.get(this.organism.originalDataset).get(this.runningDataset).get("tra");
     }
@@ -96,12 +97,12 @@ public class Preprocessor {
      * @throws java.lang.Exception
      */
     public Classifier getClassifier() throws Exception {
-       if(classifier == null){
-           classifier = new Classifier(this, this.runningClassifier, this.fold);
-       }
-       return this.classifier;
+        if(classifier == null){
+            classifier = new Classifier(this, this.runningClassifier, this.fold);
+        }
+        return this.classifier;
     }
-    
+
     /** Retorna o número de atributos do dataset do organismo em questão
      *
      * @return Inteiro que corresponde ao número de atributos.

@@ -6,10 +6,7 @@ import general_algorithms.FileHandler;
 import nsgaii.NSGAIIAlgorithm;
 import weka.core.Instances;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +17,7 @@ public class ExpNSGAIIGridSearchGAProblem {
 
         int maxEvaluation;
 
-        String output = "results\\results-gridsearch.csv";
+        String output = "results//results-gridsearch.csv";
         FileHandler.initCSVWriter(output);
 
         // Grid
@@ -39,7 +36,7 @@ public class ExpNSGAIIGridSearchGAProblem {
         int numberOfThreads = calculateNumThreads(dataSets.length);
 
         System.out.println("Reading all the data...");
-        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
+        ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, List<Instances>>>> allDatasets = FileHandler.readAllDatasetsFolds(dataSets);
         System.out.println("The read have been complete and the data are into memory!");
 
         System.out.println("The machine has " + Runtime.getRuntime().availableProcessors() + " cores processors");
@@ -59,7 +56,7 @@ public class ExpNSGAIIGridSearchGAProblem {
                     }
                     for(String runningClassifier : classifier){
                         for (int kValue : kValueSearch){
-                            for(ModelOrganism organism : ModelOrganism.values()){ // GridSearch para todos os organismos
+                            for(ModelOrganism organism : ModelOrganism.values()){
                                 Map<Integer, Future<Object>> results = new HashMap<>();
                                 ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
                                 int indexThread = 1;

@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.opencsv.CSVWriter;
 import data_processing.ModelOrganism;
@@ -84,15 +85,15 @@ public class FileHandler {
         }
     }
 
-    public static HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> readAllDatasetsFolds(String[] datasets) throws Exception {
-        HashMap<String, HashMap<String, HashMap<String, List<Instances>>>> allDatasets = new HashMap<>();
+    public static ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, List<Instances>>>> readAllDatasetsFolds(String[] datasets) throws Exception {
+        ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, List<Instances>>>> allDatasets = new ConcurrentHashMap<>();
 
         String typeDataset = "folds";
         int folds = 10;
         for (ModelOrganism o : ModelOrganism.values()) {
-            HashMap<String, HashMap<String, List<Instances>>> typeDatasetMap =  new HashMap<>();
+            ConcurrentHashMap<String, ConcurrentHashMap<String, List<Instances>>> typeDatasetMap =  new ConcurrentHashMap<>();
                 for (String dataset: datasets) {
-                    HashMap<String, List<Instances>> datasetListMap = new HashMap<>();
+                    ConcurrentHashMap<String, List<Instances>> datasetListMap = new ConcurrentHashMap<>();
                     String pathDataTra = "";
                     String pathDataTst = "";
                     String pathDataVal = "";

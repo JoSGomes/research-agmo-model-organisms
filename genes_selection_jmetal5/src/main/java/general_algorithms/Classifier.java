@@ -50,7 +50,7 @@ public class Classifier {
         AbstractClassifier classifier = null;
         switch(this.runningClassifier){
             case "KNN" -> {
-                classifier = new IBk(1); //Rever o valor de k...
+                classifier = new IBk(1);
                 JaccardDistance jdDist = new JaccardDistance();
                 ((IBk) classifier).getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
             }
@@ -59,8 +59,9 @@ public class Classifier {
 
         }
         if (classifier != null){
-            List<Instances> traData = this.getSelectedDatasetFromSolution(bestSolution, trainFolds);
-            List<Instances> testData = this.getSelectedDatasetFromSolution(bestSolution, testFolds);
+            Remove removeFilter = this.getRemoveFilter(bestSolution, trainFolds.get(this.fold));
+            Instances traData = this.deleteAttributes(removeFilter, trainFolds);
+            Instances testData = this.deleteAttributes(removeFilter, testFolds);
             return calcGMeanSelectionRate(classifier, traData, testData);
         }
         return null;
@@ -74,25 +75,21 @@ public class Classifier {
      * de Distância a de Jaccard.
      * @return Retorna a GMean e a Reduction Ratio.
      */
-    private double[] calcGMeanSelectionRate(AbstractClassifier classifier, List<Instances> tra, List<Instances> test) throws Exception {
+    private double[] calcGMeanSelectionRate(AbstractClassifier classifier, Instances tra, Instances test) throws Exception {
         double truePos, trueNeg, falsePos, falseNeg;
         double sensivity, specificity;
         double selectionRate;
         double GMean;
 
         Random rData = new Random();
-        Instances trainSet, testSet;
         Evaluation eval;
 
-        trainSet = tra.get(this.fold);
-        testSet = test.get(this.fold);
+        tra.randomize(rData);
+        test.randomize(rData);
 
-        trainSet.randomize(rData);
-        testSet.randomize(rData);
-
-        eval = new Evaluation(trainSet);
-        classifier.buildClassifier(trainSet);
-        eval.evaluateModel(classifier, testSet);
+        eval = new Evaluation(tra);
+        classifier.buildClassifier(tra);
+        eval.evaluateModel(classifier, test);
 
         truePos = eval.numTruePositives(1);
         trueNeg = eval.numTrueNegatives(1);
@@ -109,21 +106,18 @@ public class Classifier {
 
         return new double[]{GMean, selectionRate};
     }
+    
+    private Instances deleteAttributes(Remove removeFilter, List<Instances> selectedDatasetFolds) throws Exception
+    {
+        return Filter.useFilter(selectedDatasetFolds.get(this.fold), removeFilter);
+    }
 
-    /**
-     *
-     * @param s1
-     * @param dataSetFolds
-     * @return
-     * @throws IOException
-     * @throws Exception
-     */
-    private List<Instances> getSelectedDatasetFromSolution(BinarySolution s1, List<Instances> dataSetFolds) throws IOException, Exception{
+    private Remove getRemoveFilter(BinarySolution s1, Instances inputFormat) throws Exception {
         cont = 0;
         int bits = s1.totalNumberOfBits();
         List<BinarySet> sol = s1.variables();
         List<Integer> dellAttributes = new ArrayList<>();
-         
+
         for(int i = 0; i < bits; i++)
         {
             if(!sol.get(i).get(0))
@@ -131,7 +125,8 @@ public class Classifier {
                 cont++;
                 dellAttributes.add(i);
             }
-        } 
+        }
+
         Object[] indicesObject = dellAttributes.toArray();
         int length = indicesObject.length;
         int[] indicesArray = new int[length];
@@ -139,24 +134,12 @@ public class Classifier {
         {
             indicesArray[n] = (int) indicesObject[n] + 1;
         }
-        
-        return deleteAttributes(dataSetFolds, indicesArray);
-    }  
-    
-    private List<Instances> deleteAttributes(List<Instances> selectedDatasetFolds, int[] indices) throws Exception
-    {
+
         Remove removeFilter = new Remove();
-        removeFilter.setAttributeIndicesArray(indices);
-        removeFilter.setInputFormat(selectedDatasetFolds.get(0));
-        int size = selectedDatasetFolds.size();
-        ArrayList<Instances> newData = new ArrayList<>();
-        
-        for(int n = 0; n < size; n++)
-        {
-           newData.add(Filter.useFilter(selectedDatasetFolds.get(n), removeFilter));
-        }
-        
-        return newData;
+        removeFilter.setAttributeIndicesArray(indicesArray);
+        removeFilter.setInputFormat(inputFormat);
+
+        return removeFilter;
     }
 
 }
