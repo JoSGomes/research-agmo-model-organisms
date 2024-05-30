@@ -22,7 +22,7 @@ import weka.core.neighboursearch.PerformanceStats;
  * Classe da Distância de Jaccard para ser usada no classificador KNN, visto que
  * os dados são dispostos de forma binária.
  * 
- * Todos os Créditos deste código a Luan Rios Campos.
+ * Créditos deste código a Luan Rios Campos.
  * Gitlab: https://gitlab.com/rcluan.
  * @author pbexp
  */

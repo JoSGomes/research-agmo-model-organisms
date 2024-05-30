@@ -140,25 +140,25 @@ public class NSGAIIAlgorithm implements Callable {
             solAndPopulation.add(population);
 
             // GRID SEARCH
-            List<Instances> trainFold = preprocessor.getTRAFoldAGMO();
-            List<Instances> valFold = preprocessor.getVALFoldAGMO();
+//            List<Instances> trainFold = preprocessor.getTRAFoldAGMO();
+//            List<Instances> valFold = preprocessor.getVALFoldAGMO();
+//
+//            double[] resultsClassify = preprocessor.getClassifier().classifySolution(bestSolution, trainFold, valFold);
+//
+//            FileHandler.saveResults(this.populationSizeSelectInstances, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, this.preprocessor.getRunningDataset(), bestGMean, preprocessor.getFold(), preprocessor.getKValue(), false);
 
-            double[] resultsClassify = preprocessor.getClassifier().classifySolution(bestSolution, trainFold, valFold);
+            // EXECUÇÂO NORMAL //Precisa retirar kValue dos headers depois de executar o gridsearch.
+            List<Instances> trainFold = this.preprocessor.getTRAFoldAGMO();
+            List<Instances> testFold = this.preprocessor.getTESTFoldAGMO();
 
-            FileHandler.saveResults(this.populationSizeSelectInstances, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, this.preprocessor.getRunningDataset(), bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
-            //EXECUÇÂO NORMAL //Precisa retirar kValue dos headers depois de executar o gridsearch.
-//            List<Instances> trainFold = this.preprocessor.getTRAFoldAGMO();
-//            List<Instances> testFold = this.preprocessor.getTESTFoldAGMO();
-//
-//            double[] resultsClassify = preprocessor.getClassifier().classifySolution( bestSolution, trainFold, testFold);
-//            SolutionListOutput solListOutput = new SolutionListOutput(population);
-//            solListOutput
-//                    .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + this.preprocessor.getRunningDataset() + this.preprocessor.getRunningClassifier() + "\\" + this.preprocessor.getRunningDataset() + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + this.preprocessor.getRunningDataset() + ".csv", ","))
-//                    .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + this.preprocessor.getRunningDataset() + this.preprocessor.getRunningClassifier() + "\\" + this.preprocessor.getRunningDataset() + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + this.preprocessor.getRunningDataset() + ".csv", ","))
-//                    .print();
-//
-//
-//            FileHandler.saveResults(this.populationSizeSelectInstances, this.probabilityMutationSelectInstances, this.probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, this.preprocessor.getRunningDataset(), bestGMean, preprocessor.getFold(), preprocessor.getKValue(), true);
+            double[] resultsClassify = preprocessor.getClassifier().classifySolution(bestSolution, trainFold, testFold);
+            SolutionListOutput solListOutput = new SolutionListOutput(population);
+            solListOutput
+                    .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + this.preprocessor.getRunningClassifier() + "\\" + this.preprocessor.getRunningDataset() + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + "fold-" + this.preprocessor.getFold() + ".csv", ","))
+                    .setFunFileOutputContext(new DefaultFileOutputContext("results\\" + this.preprocessor.getRunningClassifier() + "\\" + this.preprocessor.getRunningDataset() + "\\" + "FUN-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + "fold-" + this.preprocessor.getFold() + ".csv", ","))
+                    .print();
+
+            FileHandler.saveResults(this.populationSizeSelectInstances, this.probabilityMutationSelectInstances, this.probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, this.preprocessor.getRunningDataset(), bestGMean, preprocessor.getFold(), preprocessor.getKValue(), false);
     }
 }
 

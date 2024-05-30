@@ -36,7 +36,7 @@ public class FileHandler {
             Writer writer = new FileWriter(output, true);
             csvWriter = new CSVWriter(writer);
             //Precisa retirar kValue dos headers depois de executar o gridsearch.
-            String[] headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "kValue", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
+            String[] headers = new String[]{"organism", "populationSize", "mutationProbability", "crossoverProbability", "runningDataset", "fold", "GMean", "selectionRate", "Best GMean AGMO"};
             csvWriter.writeAll(Collections.singletonList(headers));
             csvWriter.flush();
         }

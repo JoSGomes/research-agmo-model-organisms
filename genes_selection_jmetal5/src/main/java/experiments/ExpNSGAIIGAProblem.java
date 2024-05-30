@@ -29,8 +29,8 @@ import weka.core.Instances;
 public class ExpNSGAIIGAProblem {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, Exception, Exception {
-        int populationSize = 100;
-        int maxEvaluation = 20000;
+        int populationSize = 0;
+        int maxEvaluation = 0;
 
         //Controle dos datasets
         int numberOfFolds = 10;
@@ -50,7 +50,7 @@ public class ExpNSGAIIGAProblem {
         for(String runningDataSet : dataSets){
             for(String runningClassifier : classifier){
                 FileHandler.closeCSVWriter();
-                String output = "results\\" + runningDataSet + runningClassifier + "\\results.csv";
+                String output = "results\\" + runningClassifier + "\\" + runningDataSet + "\\results.csv";
                 FileHandler.initCSVWriter(output);
                 for(ModelOrganism organism : ModelOrganism.values()){
                     Map<Integer, Future<Object>> results = new HashMap<>();
@@ -58,24 +58,229 @@ public class ExpNSGAIIGAProblem {
                     int indexThread = 1;
                     double probabilityCrossoverSelectInstances = 0;
                     double probabilityMutationSelectInstances = 0;
+                    int kValue = 0;
                     for(int fold = 0; fold < numberOfFolds; fold++){
                         //Parâmetros do NSGAII
                         switch (organism.originalDataset)
                         {
-                            case "Drosophila melanogaster", "Saccharomyces cerevisiae" -> {
-                                probabilityMutationSelectInstances = 0.2;
-                                probabilityCrossoverSelectInstances = 0.5;
+                            case "Drosophila melanogaster" -> {
+                                switch(runningDataSet) {
+                                    case "CC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.7;
+                                        maxEvaluation = 30000;
+                                        populationSize = 150;
+                                        kValue = 1;
+                                    }
+                                    case "MF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "MFCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BP" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 20000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BPCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BPMF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 30000;
+                                        populationSize = 150;
+                                        kValue = 5;
+                                    }
+                                    case "BPMFCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 5;
+                                    }
+                                }
                             }
-                            case "Mus musculus", "Caenorhabditis elegans" -> {
-                                probabilityMutationSelectInstances = 0.2;
-                                probabilityCrossoverSelectInstances = 0.9;
+                            case "Mus musculus" -> {
+                                switch(runningDataSet) {
+                                    case "CC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.7;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "MF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "MFCC" -> {
+                                        probabilityMutationSelectInstances = 0.4;
+                                        probabilityCrossoverSelectInstances = 0.7;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BP" -> {
+                                        probabilityMutationSelectInstances = 0.4;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BPCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 20000;
+                                        populationSize = 100;
+                                        kValue = 1;
+                                    }
+                                    case "BPMF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 5;
+                                    }
+                                    case "BPMFCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 30000;
+                                        populationSize = 150;
+                                        kValue = 1;
+                                    }
+                                }
+                            }
+                            case "Caenorhabditis elegans" -> {
+                                switch(runningDataSet) {
+                                    case "CC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 30000;
+                                        populationSize = 150;
+                                        kValue = 1;
+                                    }
+                                    case "MF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "MFCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.7;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BP" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 20000;
+                                        populationSize = 100;
+                                        kValue = 1;
+                                    }
+                                    case "BPCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BPMF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BPMFCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 20000;
+                                        populationSize = 100;
+                                        kValue = 1;
+                                    }
+                                }
+                            }
+                            case "Saccharomyces cerevisiae" -> {
+                                switch(runningDataSet) {
+                                    case "CC" -> {
+                                        probabilityMutationSelectInstances = 0.6;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 30000;
+                                        populationSize = 150;
+                                        kValue = 9;
+                                    }
+                                    case "MF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 20000;
+                                        populationSize = 100;
+                                        kValue = 1;
+                                    }
+                                    case "MFCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 40000;
+                                        populationSize = 200;
+                                        kValue = 1;
+                                    }
+                                    case "BP" -> {
+                                        probabilityMutationSelectInstances = 0.4;
+                                        probabilityCrossoverSelectInstances = 0.5;
+                                        maxEvaluation = 30000;
+                                        populationSize = 150;
+                                        kValue = 1;
+                                    }
+                                    case "BPCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.7;
+                                        maxEvaluation = 20000;
+                                        populationSize = 100;
+                                        kValue = 1;
+                                    }
+                                    case "BPMF" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.9;
+                                        maxEvaluation = 20000;
+                                        populationSize = 100;
+                                        kValue = 1;
+                                    }
+                                    case "BPMFCC" -> {
+                                        probabilityMutationSelectInstances = 0.2;
+                                        probabilityCrossoverSelectInstances = 0.7;
+                                        maxEvaluation = 30000;
+                                        populationSize = 150;
+                                        kValue = 1;
+                                    }
+                                }
                             }
                         }
                         try
                         {
-                            preprocessor = new Preprocessor(organism, runningDataSet, allDatasets, runningClassifier, fold, 1);
+                            preprocessor = new Preprocessor(organism, runningDataSet, allDatasets, runningClassifier, fold, kValue);
 
-                            System.out.println("Starting... " + organism.originalDataset + " // " + runningDataSet+ " // FOLD - " + fold);
+                            System.out.println("Starting... " + runningClassifier + " // " + organism.originalDataset + " // " + runningDataSet + " // FOLD - " + fold);
                             Callable<Object> experiment = new NSGAIIAlgorithm(
                                     preprocessor,
                                     populationSize,

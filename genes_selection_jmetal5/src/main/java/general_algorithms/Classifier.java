@@ -50,7 +50,7 @@ public class Classifier {
         AbstractClassifier classifier = null;
         switch(this.runningClassifier){
             case "KNN" -> {
-                classifier = new IBk(1);
+                classifier = new IBk(this.preProcessor.getKValue());
                 JaccardDistance jdDist = new JaccardDistance();
                 ((IBk) classifier).getNearestNeighbourSearchAlgorithm().setDistanceFunction(jdDist);
             }
