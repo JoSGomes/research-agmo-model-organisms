@@ -148,10 +148,10 @@ public class NSGAIIAlgorithm implements Callable {
 //            FileHandler.saveResults(this.populationSizeSelectInstances, probabilityMutationSelectInstances, probabilityCrossoverSelectInstances, resultsClassify, preprocessor.getOrganism().originalDataset, this.preprocessor.getRunningDataset(), bestGMean, preprocessor.getFold(), preprocessor.getKValue(), false);
 
             // EXECUÇÂO NORMAL //Precisa retirar kValue dos headers depois de executar o gridsearch.
-            List<Instances> trainFold = this.preprocessor.getTRAFoldAGMO();
-            List<Instances> testFold = this.preprocessor.getTESTFoldAGMO();
+            List<Instances> trainFolds = this.preprocessor.getTRAFoldAGMO();
+            List<Instances> testFolds = this.preprocessor.getTESTFoldAGMO();
 
-            double[] resultsClassify = preprocessor.getClassifier().classifySolution(bestSolution, trainFold, testFold);
+            double[] resultsClassify = preprocessor.getClassifier().classifySolution(bestSolution, trainFolds, testFolds);
             SolutionListOutput solListOutput = new SolutionListOutput(population);
             solListOutput
                     .setVarFileOutputContext(new DefaultFileOutputContext("results\\" + this.preprocessor.getRunningClassifier() + "\\" + this.preprocessor.getRunningDataset() + "\\" + "VAR-" + preprocessor.getOrganism().name().toLowerCase() + "\\" + "fold-" + this.preprocessor.getFold() + ".csv", ","))

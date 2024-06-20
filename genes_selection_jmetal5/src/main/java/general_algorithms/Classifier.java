@@ -59,10 +59,15 @@ public class Classifier {
 
         }
         if (classifier != null){
-            Remove removeFilter = this.getRemoveFilter(bestSolution, trainFolds.get(this.fold));
-            Instances traData = this.deleteAttributes(removeFilter, trainFolds);
-            Instances testData = this.deleteAttributes(removeFilter, testFolds);
-            return calcGMeanSelectionRate(classifier, traData, testData);
+            if (bestSolution != null) {
+                Remove removeFilter = this.getRemoveFilter(bestSolution, trainFolds.get(this.fold));
+                Instances traData = this.deleteAttributes(removeFilter, trainFolds);
+                Instances testData = this.deleteAttributes(removeFilter, testFolds);
+                return calcGMeanSelectionRate(classifier, traData, testData);
+            }
+            else {
+                return calcGMeanSelectionRate(classifier, trainFolds.get(this.fold), testFolds.get(this.fold));
+            }
         }
         return null;
     }
